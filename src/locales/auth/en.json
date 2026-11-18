@@ -404,5 +404,13 @@
   "auth.onboard.passkeyNote": "Your account exists and you're signed in only after this step. After that you can also sign in with {{provider}}.",
   "auth.onboard.passkeyFailed": "The passkey was not created. Please try again.",
   "auth.onboard.cancel": "Cancel",
-  "auth.onboard.expired": "This sign-up has expired. Choose your account again."
+  "auth.onboard.expired": "This sign-up has expired. Choose your account again.",
+  "auth.card.tabSignin": "Sign in",
+  "auth.card.welcomeBack": "Welcome back",
+  "auth.card.passkeyHero": "Sign in with passkey",
+  "auth.card.orAccount": "or with your account",
+  "auth.card.continueEmail": "Continue with email",
+  "auth.card.lostEmail": "Lost access to your email?",
+  "auth.card.registerTitle": "Create account | ROUT",
+  "auth.card.registerDescription": "Create your ROUT account with a passkey: no password, no tracking."
 }

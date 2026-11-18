@@ -404,5 +404,13 @@
   "auth.onboard.passkeyNote": "Pas na deze stap bestaat je account en ben je ingelogd. Daarna kun je ook met {{provider}} inloggen.",
   "auth.onboard.passkeyFailed": "De passkey is niet aangemaakt. Probeer het opnieuw.",
   "auth.onboard.cancel": "Annuleren",
-  "auth.onboard.expired": "Deze aanmelding is verlopen. Kies opnieuw je account."
+  "auth.onboard.expired": "Deze aanmelding is verlopen. Kies opnieuw je account.",
+  "auth.card.tabSignin": "Inloggen",
+  "auth.card.welcomeBack": "Welkom terug",
+  "auth.card.passkeyHero": "Inloggen met passkey",
+  "auth.card.orAccount": "of met je account",
+  "auth.card.continueEmail": "Verder met e-mail",
+  "auth.card.lostEmail": "Geen toegang meer tot je e-mail?",
+  "auth.card.registerTitle": "Account aanmaken | ROUT",
+  "auth.card.registerDescription": "Maak je ROUT-account aan met een passkey: geen wachtwoord, geen tracking."
 }

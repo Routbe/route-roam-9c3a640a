@@ -404,5 +404,13 @@
   "auth.onboard.passkeyNote": "Votre compte n'existe et vous n'êtes connecté qu'après cette étape. Ensuite, vous pourrez aussi vous connecter avec {{provider}}.",
   "auth.onboard.passkeyFailed": "La passkey n'a pas été créée. Réessayez.",
   "auth.onboard.cancel": "Annuler",
-  "auth.onboard.expired": "Cette inscription a expiré. Choisissez à nouveau votre compte."
+  "auth.onboard.expired": "Cette inscription a expiré. Choisissez à nouveau votre compte.",
+  "auth.card.tabSignin": "Se connecter",
+  "auth.card.welcomeBack": "Bon retour",
+  "auth.card.passkeyHero": "Se connecter avec une passkey",
+  "auth.card.orAccount": "ou avec votre compte",
+  "auth.card.continueEmail": "Continuer avec l’e-mail",
+  "auth.card.lostEmail": "Vous n’avez plus accès à votre e-mail ?",
+  "auth.card.registerTitle": "Créer un compte | ROUT",
+  "auth.card.registerDescription": "Créez votre compte ROUT avec une passkey : sans mot de passe, sans pistage."
 }
