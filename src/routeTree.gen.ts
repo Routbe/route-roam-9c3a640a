@@ -225,6 +225,8 @@ import { Route as StudioGridRouteImport } from './routes/studio_.grid'
 import { Route as SubscribeConfirmRouteImport } from './routes/subscribe.confirm'
 import { Route as SubscribeLeaveRouteImport } from './routes/subscribe.leave'
 import { Route as SupportIndexRouteImport } from './routes/support.index'
+import { Route as SupportDonationsRouteImport } from './routes/support.donations'
+import { Route as SupportPartnersRouteImport } from './routes/support.partners'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as VCardIdRouteImport } from './routes/v.$cardId'
 import { Route as WSlugRouteImport } from './routes/w.$slug'
@@ -1549,6 +1551,16 @@ const SubscribeLeaveRoute = SubscribeLeaveRouteImport.update({
 const SupportIndexRoute = SupportIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => SupportRoute,
+} as any)
+const SupportDonationsRoute = SupportDonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
+  getParentRoute: () => SupportRoute,
+} as any)
+const SupportPartnersRoute = SupportPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => SupportRoute,
 } as any)
 const UUsernameRoute = UUsernameRouteImport.update({
@@ -3058,6 +3070,8 @@ export interface FileRoutesByFullPath {
   '/studio/grid': typeof StudioGridRoute
   '/subscribe/confirm': typeof SubscribeConfirmRoute
   '/subscribe/leave': typeof SubscribeLeaveRoute
+  '/support/donations': typeof SupportDonationsRoute
+  '/support/partners': typeof SupportPartnersRoute
   '/u/$username': typeof UUsernameRoute
   '/v/$cardId': typeof VCardIdRoute
   '/w/$slug': typeof WSlugRoute
@@ -3497,6 +3511,8 @@ export interface FileRoutesByTo {
   '/studio/grid': typeof StudioGridRoute
   '/subscribe/confirm': typeof SubscribeConfirmRoute
   '/subscribe/leave': typeof SubscribeLeaveRoute
+  '/support/donations': typeof SupportDonationsRoute
+  '/support/partners': typeof SupportPartnersRoute
   '/u/$username': typeof UUsernameRoute
   '/v/$cardId': typeof VCardIdRoute
   '/w/$slug': typeof WSlugRoute
@@ -3951,6 +3967,8 @@ export interface FileRoutesById {
   '/studio_/grid': typeof StudioGridRoute
   '/subscribe/confirm': typeof SubscribeConfirmRoute
   '/subscribe/leave': typeof SubscribeLeaveRoute
+  '/support/donations': typeof SupportDonationsRoute
+  '/support/partners': typeof SupportPartnersRoute
   '/u/$username': typeof UUsernameRoute
   '/v/$cardId': typeof VCardIdRoute
   '/w/$slug': typeof WSlugRoute
@@ -4407,6 +4425,8 @@ export interface FileRouteTypes {
     | '/studio/grid'
     | '/subscribe/confirm'
     | '/subscribe/leave'
+    | '/support/donations'
+    | '/support/partners'
     | '/u/$username'
     | '/v/$cardId'
     | '/w/$slug'
@@ -4846,6 +4866,8 @@ export interface FileRouteTypes {
     | '/studio/grid'
     | '/subscribe/confirm'
     | '/subscribe/leave'
+    | '/support/donations'
+    | '/support/partners'
     | '/u/$username'
     | '/v/$cardId'
     | '/w/$slug'
@@ -5299,6 +5321,8 @@ export interface FileRouteTypes {
     | '/studio_/grid'
     | '/subscribe/confirm'
     | '/subscribe/leave'
+    | '/support/donations'
+    | '/support/partners'
     | '/u/$username'
     | '/v/$cardId'
     | '/w/$slug'
@@ -7318,6 +7342,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/support/'
       preLoaderRoute: typeof SupportIndexRouteImport
+      parentRoute: typeof SupportRoute
+    }
+    '/support/donations': {
+      id: '/support/donations'
+      path: '/donations'
+      fullPath: '/support/donations'
+      preLoaderRoute: typeof SupportDonationsRouteImport
+      parentRoute: typeof SupportRoute
+    }
+    '/support/partners': {
+      id: '/support/partners'
+      path: '/partners'
+      fullPath: '/support/partners'
+      preLoaderRoute: typeof SupportPartnersRouteImport
       parentRoute: typeof SupportRoute
     }
     '/u/$username': {
@@ -9536,6 +9574,8 @@ const SolutionsRouteWithChildren = SolutionsRoute._addFileChildren(
 )
 
 interface SupportRouteChildren {
+  SupportDonationsRoute: typeof SupportDonationsRoute
+  SupportPartnersRoute: typeof SupportPartnersRoute
   SupportIndexRoute: typeof SupportIndexRoute
   SupportAccountBillingRoute: typeof SupportAccountBillingRoute
   SupportAccountDataDomainsRoute: typeof SupportAccountDataDomainsRoute
@@ -9553,6 +9593,8 @@ interface SupportRouteChildren {
 }
 
 const SupportRouteChildren: SupportRouteChildren = {
+  SupportDonationsRoute: SupportDonationsRoute,
+  SupportPartnersRoute: SupportPartnersRoute,
   SupportIndexRoute: SupportIndexRoute,
   SupportAccountBillingRoute: SupportAccountBillingRoute,
   SupportAccountDataDomainsRoute: SupportAccountDataDomainsRoute,
