@@ -115,4 +115,6 @@ use the editor.
 <!-- AGENT-MEMORY:BEGIN -->
 ## One-file migration rollout
 - A GO for a single migration is applied with scripts/migration-rollout.ts --apply: the exact db/ file text travels as one parameter, runs only if its SHA-256 equals the file checksum and its predecessor is recorded, and is recorded with the definer guard in the same transaction (dry run: src/test/migration-rollout.test.ts). Why: a retyped or hand-split file must never diverge from db/.
+## Auth card tabs and Conditional UI
+- The /login and /register tabs swap the address with History.prototype.replaceState (src/lib/auth/auth-tab-url.ts) and the conditional passkey request runs under one AbortController that is aborted before every explicit ceremony (src/lib/auth/conditional-passkey.ts). Why: TanStack patches window.history.replaceState into a navigation that remounts the card, and browsers allow only one WebAuthn request at a time.
 <!-- AGENT-MEMORY:END -->
