@@ -15,7 +15,7 @@ function DnssecChip({ state }: { state: DnssecState | undefined }) {
   const { t } = useI18n();
   const Icon = state === undefined ? Loader2 : state === "valid" ? ShieldCheck : state === "unsigned" ? ShieldOff : ShieldQuestion;
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px]", state === "valid" ? "border-foreground/30 text-foreground" : "border-border/60 text-muted-foreground")}>
+    <span className={cn("inline-flex items-center gap-1 self-start rounded-full border px-2 py-0.5 text-[11px]", state === "valid" ? "border-foreground/30 text-foreground" : "border-border/60 text-muted-foreground")}>
       <Icon className={cn("size-3", state === undefined && "animate-spin")} aria-hidden />
       {t(K + (state === undefined ? "dnssec.checking" : `dnssec.${state}`))}
     </span>
