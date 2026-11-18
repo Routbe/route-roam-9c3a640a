@@ -15,6 +15,7 @@ export function PublicProviderSignIn({
   disabled,
   passkey,
   errorPath = "/auth/sign-in",
+  compact = false,
 }: {
   configured: string[];
   readiness: AuthReadiness | null;
@@ -23,6 +24,8 @@ export function PublicProviderSignIn({
   passkey?: { label: string; onSelect: () => void };
   /** Where Better Auth sends a failed sign-in; it appends `?error=<code>` itself. */
   errorPath?: string;
+  /** One quiet icon row on every screen size (auth card); Google keeps its brand colours. */
+  compact?: boolean;
 }) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState<string | null>(null);
@@ -42,7 +45,7 @@ export function PublicProviderSignIn({
   }
   return <div className="space-y-2">
     {/* Mobile: compact icon row. Desktop: full labelled buttons. */}
-    <div className="flex flex-wrap justify-center gap-2 md:hidden" role="group" aria-label={t("auth.provider.continue", { name: "" })}>
+    <div className={`flex flex-wrap justify-center gap-2 ${compact ? "" : "md:hidden"}`} data-testid="auth-provider-row" role="group" aria-label={t("auth.provider.continue", { name: "" })}>
       {passkey && <Button type="button" variant="outline" size="icon" aria-label={passkey.label} title={passkey.label}
         className="h-11 w-11 rounded-xl" disabled={disabled || busy !== null} onClick={passkey.onSelect}>
         <Fingerprint className="h-[18px] w-[18px]" aria-hidden />
@@ -50,14 +53,14 @@ export function PublicProviderSignIn({
       {AUTH_PROVIDERS.map(provider => {
         const available = providerAvailable(provider.id, configured, readiness);
         return <Button key={provider.id} type="button" variant="outline" size="icon" aria-label={t("auth.provider.continue", { name: provider.label })}
-          className={`h-11 w-11 rounded-xl`} disabled={disabled || busy !== null || !available}
+          className={`h-11 w-11 rounded-xl ${compact && provider.id !== "google" ? "text-muted-foreground grayscale transition hover:text-foreground hover:grayscale-0" : ""}`} disabled={disabled || busy !== null || !available}
           title={!available ? t("auth.provider.config", { name: provider.label }) : provider.label}
           onClick={() => void signIn(provider)}>
           {busy === provider.id ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : <ProviderMark id={provider.id} />}
         </Button>;
       })}
     </div>
-    <div className="hidden space-y-2 md:block">
+    {!compact && <div className="hidden space-y-2 md:block">
     {passkey && <Button type="button" variant="outline" className="min-h-11 w-full justify-start gap-2.5 px-3 text-sm" disabled={disabled || busy !== null} onClick={passkey.onSelect}>
       <Fingerprint className="h-[18px] w-[18px]" aria-hidden />
       <span className="min-w-0 flex-1 text-left">{passkey.label}</span>
@@ -71,7 +74,7 @@ export function PublicProviderSignIn({
         <span className="min-w-0 flex-1 text-left">{t("auth.provider.continue", { name: provider.label })}</span>
       </Button>;
     })}
-    </div>
+    </div>}
     <FediverseDialog provider={fediverse} onClose={() => setFediverse(null)} next={POST_AUTH_PATH} />
   </div>;
 }

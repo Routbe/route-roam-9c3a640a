@@ -474,29 +474,29 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
       )}
       <div className="flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center bg-background p-4 text-foreground">
         {!adminPortal && (
-          <div className="w-full max-w-md md:max-w-4xl">
+          <div className="w-full max-w-md">
             <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> {t("auth.ui.back")}
             </Link>
           </div>
         )}
 
-        <div className={`w-full rounded-2xl border border-border bg-card p-5 sm:p-7 ${!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" ? "max-w-md md:max-w-4xl" : "max-w-md"}`}>
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 sm:p-7" data-testid="auth-card">
+          {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
+            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
+              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
+              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
+            </div>
+          )}
           <div className="mb-4">
             <h1 className="mb-1 font-display text-2xl text-foreground">
-              {adminPortal ? t("auth.admin") : mode === "signup" ? t("auth.ui.signup.cta") : mode === "recovery" ? t("auth.pk.recoveryTitle") : mode === "reset" ? t("auth.mf.resetTitle") : t("auth.ui.title")}
+              {adminPortal ? t("auth.admin") : mode === "signup" ? t("auth.ui.signup.cta") : mode === "recovery" ? t("auth.pk.recoveryTitle") : mode === "reset" ? t("auth.mf.resetTitle") : t("auth.card.welcomeBack")}
             </h1>
             {mode !== "reset" && step !== "second" && (
               <p className="text-sm text-muted-foreground">{mode === "recovery" ? t("auth.pk.recoverySubtitle") : mode === "signup" ? t("auth.pk.signupSubtitle") : smart ? t("auth.smart.subtitle") : t("auth.pk.subtitle")}</p>
             )}
           </div>
 
-          {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
-            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
-              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-10 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.title")}</button>
-              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-10 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
-            </div>
-          )}
           {embedded && (
             <Alert className="mb-4"><AlertDescription className="flex flex-col gap-2">
               <span>Inloggen en registreren met een passkey werkt niet in dit ingebedde venster. Open de pagina in een nieuw tabblad.</span>
@@ -565,35 +565,27 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
               )}
 
               {!smart && step === "choose" && (
-                <div className={adminPortal ? "space-y-3" : "flex flex-col gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-8"}>
-                  {!adminPortal && <>
-                    <div className="md:order-3"><PublicProviderSignIn configured={configuredProviders} readiness={readiness} disabled={loading} passkey={{ label: t("auth.provider.passkeyTile"), onSelect: () => void passkeyLogin() }} /></div>
-                    <div className="flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted-foreground md:order-2 md:flex-col md:py-2" aria-hidden>
-                      <span className="h-px flex-1 bg-border md:h-auto md:w-px" /> of <span className="h-px flex-1 bg-border md:h-auto md:w-px" />
-                    </div>
-                  </>}
-                  <div className="space-y-3 md:order-1">
-                  <Button type="button" onClick={() => void passkeyLogin()} disabled={loading || unavailable} className="cta-glow h-auto min-h-12 w-full gap-2 whitespace-normal px-4 py-3 text-center text-sm leading-tight sm:text-base">
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4 shrink-0" />} <span className="min-w-0">{t("auth.passkey")}</span>
+                <div className="space-y-4" data-testid="auth-signin-choose">
+                  <Button type="button" onClick={() => void passkeyLogin()} disabled={loading || unavailable} data-testid="auth-passkey-hero" className="cta-glow h-auto min-h-12 w-full gap-2 whitespace-normal px-4 py-3 text-center text-sm leading-tight sm:text-base">
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-5 w-5 shrink-0" />} <span className="min-w-0">{adminPortal ? t("auth.passkey") : t("auth.card.passkeyHero")}</span>
                   </Button>
                   <p className="text-center text-[11px] text-muted-foreground">{t("auth.passkey.hint")}</p>
-                  <div className="flex items-center gap-3 py-1 text-[11px] uppercase tracking-wide text-muted-foreground">
-                    <span className="h-px flex-1 bg-border" aria-hidden /> {t("auth.mf.orEmail")} <span className="h-px flex-1 bg-border" aria-hidden />
-                  </div>
+                  {!adminPortal && <>
+                    <div className="flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted-foreground" aria-hidden>
+                      <span className="h-px flex-1 bg-border" /> {t("auth.card.orAccount")} <span className="h-px flex-1 bg-border" />
+                    </div>
+                    <PublicProviderSignIn compact configured={configuredProviders} readiness={readiness} disabled={loading} />
+                  </>}
                   <form onSubmit={(e) => { e.preventDefault(); void sendLink(); }} className="space-y-3">
                     {emailField}
-                      <Button type="submit" variant="outline" disabled={loading || unavailable || !!emailError} className="h-11 w-full gap-2 rounded-lg">
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />} {t("auth.mf.sendLink")}
-                      </Button>
+                    <Button type="submit" variant="outline" disabled={loading || unavailable || !!emailError} className="h-11 w-full gap-2 rounded-lg">
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />} {adminPortal ? t("auth.mf.sendLink") : t("auth.card.continueEmail")}
+                    </Button>
                   </form>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    {passwordAvailable && passwordFold}
-                  </div>
+                  {passwordAvailable && passwordFold}
                   {adminPortal && <p className="text-[11px] text-muted-foreground">{t("auth.mf.adminNote")}</p>}
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-                    {!adminPortal && linkButton("signup", t("auth.ui.signup.cta"), KeyRound)}
-                    {linkButton("recovery", t("auth.mf.recoveryLink"), LifeBuoy)}
-                  </div>
+                  <div className="flex justify-center border-t border-border pt-3" data-testid="auth-card-footer">
+                    {linkButton("recovery", adminPortal ? t("auth.mf.recoveryLink") : t("auth.card.lostEmail"), LifeBuoy)}
                   </div>
                 </div>
               )}
@@ -641,7 +633,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
                   readiness={readiness}
                   disabled={loading}
                   errorPath="/auth/sign-up"
-                  passkey={{ label: t("auth.provider.passkeyTile"), onSelect: () => document.getElementById("auth-email")?.focus() }}
+                  compact
                 />
                 <p className="text-center text-[11px] leading-relaxed text-muted-foreground">{t("auth.provider.signupHint")}</p>
               </div>
@@ -650,7 +642,9 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
               </div>
               {emailField}
               {signupFields}
-              {linkButton("signin", t("auth.pk.haveAccount"), Fingerprint)}
+              <div className="flex justify-center border-t border-border pt-3" data-testid="auth-card-footer">
+                {linkButton("recovery", t("auth.card.lostEmail"), LifeBuoy)}
+              </div>
             </form>
           )}
 
