@@ -329,3 +329,37 @@ grant execute on function public.rout_public_treasury_summary() to rout_app;
 grant execute on function public.rout_public_supporter_presentation(text) to rout_app;
 grant execute on function public.rout_support_save_partner(text, boolean, boolean, text, text, text, text, timestamptz) to rout_app;
 grant execute on function public.rout_public_partner_attestations() to rout_app;
+
+-- Account merge: donations and supporter credentials are money/credential records (strategy "skip"
+-- in account-merge-rules.ts). execute_account_merge refuses a secondary account that owns one,
+-- instead of nulling the donor or cascading the credential away (same pattern as 0215/0289).
+do $own$ begin execute format('grant rout_merge_executor to %I with inherit true, set true', current_user); end $own$;
+grant create on schema public to rout_merge_executor;
+
+do $m$
+declare
+  v_def text;
+  v_new text;
+  v_guard text := '';
+  t text;
+begin
+  foreach t in array array['supporter_donations', 'supporter_credentials'] loop
+    execute format('grant select (user_id) on public.%I to rout_merge_executor', t);
+    execute format('drop policy if exists atomic_merge_guard on public.%I', t);
+    execute format('create policy atomic_merge_guard on public.%I for select to rout_merge_executor using (true)', t);
+  end loop;
+  select pg_get_functiondef('public.execute_account_merge(text,text,text,text)'::regprocedure) into v_def;
+  foreach t in array array['supporter_donations', 'supporter_credentials'] loop
+    continue when position('merge_blocked:' || t || '''' in v_def) > 0;
+    v_guard := v_guard || format(E' perform public.rout_merge_assert((not exists (select 1 from public.%I where "user_id" = v_secondary)), %L);\n', t, 'merge_blocked:' || t);
+  end loop;
+  if v_guard = '' then return; end if;
+  v_new := regexp_replace(v_def, E'([^\\n]*''merge_blocked:verified_identities''[^\\n]*\\n)', E'\\1' || replace(v_guard, '\', '\\'));
+  if v_new = v_def then
+    raise exception 'execute_account_merge: guard anchor merge_blocked:verified_identities not found';
+  end if;
+  execute v_new;
+end $m$;
+
+revoke create on schema public from rout_merge_executor;
+do $own$ begin execute format('revoke rout_merge_executor from %I', current_user); end $own$;

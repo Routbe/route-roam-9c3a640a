@@ -44,6 +44,9 @@ export const MERGE_TABLES: Readonly<Record<string, MergeTableRule>> = {
   // granted for. The FK cascades on delete, so a merge is refused instead of
   // silently moving or dropping a consent record.
   parent_authorizations: r("skip"),
+  // Support treasury (0293): donations and supporter credentials are money/credential records.
+  supporter_donations: r("skip"),
+  supporter_credentials: r("skip"),
   // Omni ingestion and live-presence rows (0185-0190) were added after the merge
   // manifest was reviewed: until a move strategy is reviewed, a secondary
   // account that owns any of them blocks the merge instead of losing data.
