@@ -36,14 +36,14 @@ describe("Belgian structured communication", () => {
   it("uses mod 97 with 97 for a zero remainder", () => {
     expect(ogmCheck("0000000097")).toBe("97");
     expect(ogmCheck("1000000001")).toBe(String(Number(1000000001n % 97n)).padStart(2, "0"));
-    expect(isValidOgm("100000000194")).toBe(true);
-    expect(isValidOgm("100000000195")).toBe(false);
+    expect(isValidOgm("100000000135")).toBe(true);
+    expect(isValidOgm("100000000136")).toBe(false);
   });
   it("formats as +++XXX/XXXX/XXXXX+++ and reads it back from a bank description", () => {
-    expect(formatOgm("100000000194")).toBe("+++100/0000/00194+++");
-    expect(parseOgm("Gift ROUT +++100/0000/00194+++ bedankt")).toBe("100000000194");
-    expect(parseOgm("***100/0000/00194***")).toBe("100000000194");
-    expect(parseOgm("+++100/0000/00195+++")).toBeNull();
+    expect(formatOgm("100000000135")).toBe("+++100/0000/00135+++");
+    expect(parseOgm("Gift ROUT +++100/0000/00135+++ bedankt")).toBe("100000000135");
+    expect(parseOgm("***100/0000/00135***")).toBe("100000000135");
+    expect(parseOgm("+++100/0000/00136+++")).toBeNull();
   });
   it("generates valid communications", () => {
     for (let i = 0; i < 50; i++) expect(isValidOgm(generateOgm())).toBe(true);
@@ -199,7 +199,7 @@ describe("signed receipt", () => {
 describe("bunq callback", () => {
   const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
   const pem = publicKey.export({ type: "spki", format: "pem" }).toString();
-  const body = JSON.stringify({ NotificationUrl: { category: "PAYMENT", object: { Payment: { id: 991, amount: { value: "25.00", currency: "EUR" }, description: "+++100/0000/00194+++", counterparty_alias: { iban: "BE00", display_name: "X" } } } } });
+  const body = JSON.stringify({ NotificationUrl: { category: "PAYMENT", object: { Payment: { id: 991, amount: { value: "25.00", currency: "EUR" }, description: "+++100/0000/00135+++", counterparty_alias: { iban: "BE00", display_name: "X" } } } } });
   const sig = createSign("RSA-SHA256").update(body).sign(privateKey).toString("base64");
 
   it("accepts only bunq's server signature over the raw body", () => {
@@ -208,7 +208,7 @@ describe("bunq callback", () => {
     expect(verifyBunqSignature(body, null, pem)).toBe(false);
   });
   it("extracts amount and structured communication, never the payer", () => {
-    expect(parseBunqPayment(JSON.parse(body))).toEqual({ paymentId: "991", amountCents: 2500, ogm: "100000000194" });
+    expect(parseBunqPayment(JSON.parse(body))).toEqual({ paymentId: "991", amountCents: 2500, ogm: "100000000135" });
   });
   it("ignores outgoing payments and other currencies", () => {
     const out = JSON.parse(body.replace('"25.00"', '"-25.00"'));

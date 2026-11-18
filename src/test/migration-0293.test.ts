@@ -67,7 +67,7 @@ describe("db/0293 support treasury", () => {
   });
 
   it("level 1 needs a signed-in member; levels 2 and 3 never store one", async () => {
-    expect(await create(null, 1, "sepa", 1000, "100000000194", H("1"))).toEqual([]);
+    expect(await create(null, 1, "sepa", 1000, "100000000135", H("1"))).toEqual([]);
     const pseudo = (await create(KYC, 2, "stripe", 1000, null, H("2")))[0]!;
     expect(pseudo.attested).toBe(true);
     const rows = await db.query<{ user_id: string | null; attested: boolean }>("select user_id, attested from public.supporter_donations where id = $1", [pseudo.id]);
@@ -81,12 +81,12 @@ describe("db/0293 support treasury", () => {
 
   it("paid donations append the next leaf; the stored siblings rebuild the same root as the TypeScript tree", async () => {
     const mem = new MemoryTree();
-    const a = (await create(MEMBER, 1, "sepa", 2500, "100000000295", H("4")))[0]!.id!;
-    const b = (await create(null, 2, "sepa", 1000, "100000000396", H("5")))[0]!.id!;
+    const a = (await create(MEMBER, 1, "sepa", 2500, "100000000236", H("4")))[0]!.id!;
+    const b = (await create(null, 2, "sepa", 1000, "100000000337", H("5")))[0]!.id!;
     const c = (await create(null, 3, "stripe", 500, null, H("6")))[0]!.id!;
     expect(await as(null, "select public.rout_support_set_provider_ref($1, $2, 'cs_test_1')", [c, H("6")], true)).toEqual([{ rout_support_set_provider_ref: true }]);
 
-    const pending = await as<{ id: string; privacy_level: number; handle: string | null }>(null, "select * from public.rout_support_pending('100000000295', null)");
+    const pending = await as<{ id: string; privacy_level: number; handle: string | null }>(null, "select * from public.rout_support_pending('100000000236', null)");
     expect(pending[0]).toMatchObject({ id: a, privacy_level: 1, handle: "jona" });
 
     const pa = await pay(a, 2500, 0n, opening(2500, 1, "01".repeat(31)));
