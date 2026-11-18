@@ -30,11 +30,53 @@ export function resolveSupportAmount(requested: unknown): number | null {
 }
 
 export type TreasuryAccount = { iban: string; name: string; bic: string | null };
-export function treasuryAccount(): TreasuryAccount | null {
+
+/** Beneficiary name when ROUT_TREASURY_NAME is not set (owner's choice, 2026-11-18). */
+export const DEFAULT_TREASURY_NAME = "ROUT Sovereign Identity OS";
+
+/** ROUT_TREASURY_IBAN / _NAME / _BIC from the server environment; null without a valid IBAN. */
+export function treasuryAccountFromEnv(): TreasuryAccount | null {
   const iban = (process.env["ROUT_TREASURY_IBAN"] ?? "").replace(/\s+/g, "").toUpperCase();
-  const name = (process.env["ROUT_TREASURY_NAME"] ?? "").trim();
+  const name = (process.env["ROUT_TREASURY_NAME"] ?? "").trim() || DEFAULT_TREASURY_NAME;
   const bic = (process.env["ROUT_TREASURY_BIC"] ?? "").replace(/\s+/g, "").toUpperCase() || null;
-  return iban && name && isValidIban(iban) ? { iban, name, bic } : null;
+  return iban && isValidIban(iban) ? { iban, name, bic } : null;
+}
+
+// bunq fallback, cached per worker: bunq rate-limits GETs, and a page view must not hit it each time.
+const BUNQ_HIT_TTL_MS = 10 * 60_000;
+const BUNQ_MISS_TTL_MS = 60_000;
+let bunqTreasury: { at: number; account: TreasuryAccount | null } | null = null;
+export function resetTreasuryCache(): void {
+  bunqTreasury = null;
+}
+
+/**
+ * Treasury account: the environment first; without ROUT_TREASURY_IBAN, the main EUR account
+ * of the configured bunq user (BUNQ_API_KEY/_PRIVATE_KEY/_PUBLIC_KEY). The name stays
+ * ROUT_TREASURY_NAME (default above) and the BIC only comes from ROUT_TREASURY_BIC.
+ */
+export async function treasuryAccount(): Promise<TreasuryAccount | null> {
+  const fromEnv = treasuryAccountFromEnv();
+  if (fromEnv) return fromEnv;
+  const now = Date.now();
+  if (bunqTreasury && now - bunqTreasury.at < (bunqTreasury.account ? BUNQ_HIT_TTL_MS : BUNQ_MISS_TTL_MS)) return bunqTreasury.account;
+  let account: TreasuryAccount | null = null;
+  try {
+    const { bunqConfigured, listMonetaryAccounts, mainEurAccount } = await import("@/lib/bunq.server");
+    if (bunqConfigured()) {
+      const main = mainEurAccount(await listMonetaryAccounts());
+      const iban = main?.iban?.replace(/\s+/g, "").toUpperCase() ?? "";
+      if (iban && isValidIban(iban)) {
+        const name = (process.env["ROUT_TREASURY_NAME"] ?? "").trim() || DEFAULT_TREASURY_NAME;
+        const bic = (process.env["ROUT_TREASURY_BIC"] ?? "").replace(/\s+/g, "").toUpperCase() || null;
+        account = { iban, name, bic };
+      }
+    }
+  } catch (err) {
+    console.error("[support] bunq treasury lookup failed", err instanceof Error ? err.message : "error");
+  }
+  bunqTreasury = { at: now, account };
+  return account;
 }
 
 async function ready(): Promise<boolean> {
@@ -67,7 +109,7 @@ export async function startSupport(opts: { level: PrivacyLevel; rail: Rail; amou
   const amount = resolveSupportAmount(opts.amountCents);
   if (amount === null) return { ok: false, reason: "invalid_amount" };
   if (opts.level === 1 && !opts.signedIn) return { ok: false, reason: "sign_in_required" };
-  const account = treasuryAccount();
+  const account = opts.rail === "sepa" ? await treasuryAccount() : null;
   if (opts.rail === "sepa" && !account) return { ok: false, reason: "sepa_not_configured" };
   const { stripeKey } = await import("@/lib/verification.server");
   const key = stripeKey();
@@ -278,7 +320,7 @@ export async function readDonation(id: string, token: string): Promise<DonationV
   const level = Number(r["privacy_level"]) as PrivacyLevel;
   const receipt = (r["receipt"] as SignedReceipt | null) ?? null;
   const ogm = (r["ogm"] as string | null) ?? null;
-  const account = treasuryAccount();
+  const account = ogm ? await treasuryAccount() : null;
   const amountCents = Number(r["amount_cents"]);
   const { credential, proof } = await credentialAndProof(id, level, r["cred_ciphertext"], r["cred_iv"], receipt);
   return {
@@ -322,7 +364,7 @@ export type SupportOverview = {
 export async function readOverview(): Promise<SupportOverview> {
   const { stripeKey } = await import("@/lib/verification.server");
   const { supportPublicKey } = await import("./keys.server");
-  const base = { sepa: treasuryAccount() !== null, stripe: Boolean(stripeKey()), publicKey: await supportPublicKey().catch(() => null) };
+  const base = { sepa: (await treasuryAccount()) !== null, stripe: Boolean(stripeKey()), publicKey: await supportPublicKey().catch(() => null) };
   const empty: SupportOverview = { ready: false, ledger: [], monthCents: 0, monthCount: 0, totalCents: 0, root: null, coverage: coverage(0), ...base };
   try {
     if (!(await ready())) return empty;
