@@ -20,6 +20,21 @@ describe("2027 auth card", () => {
     expect(screen.getAllByRole("button", { name: "auth.provider.continue:Google" })).toHaveLength(1);
   });
 
+  it("every provider in the compact row is monochrome, Google included", () => {
+    const { container } = render(<PublicProviderSignIn compact configured={["google", "github", "gitlab"]} readiness={READY} disabled={false} />);
+    const row = screen.getByTestId("auth-provider-row");
+    expect(row.querySelectorAll("svg").length).toBeGreaterThan(2);
+    for (const svg of row.querySelectorAll("svg")) expect(svg.getAttribute("data-mark")).toBe("mono");
+    expect(container.innerHTML).not.toMatch(/#4285F4|#34A853|#FBBC05|#EA4335/i);
+  });
+
+  it("hero passkey texts per tab", () => {
+    const n = nl as Record<string, string>;
+    expect(n["auth.card.passkeyHero"]).toBe("Inloggen met Passkey");
+    expect(n["auth.card.passkeyHeroSignup"]).toBe("Direct registreren met Passkey");
+    for (const dict of [en, fr, de] as Record<string, string>[]) for (const k of ["auth.card.passkeyHeroSignup", "auth.card.signupHeroHint", "auth.card.modeLabel"]) expect(dict[k], k).toBeTruthy();
+  });
+
   it("new card texts exist in NL, EN, FR and DE", () => {
     const keys = ["auth.card.tabSignin", "auth.card.welcomeBack", "auth.card.passkeyHero", "auth.card.orAccount", "auth.card.continueEmail", "auth.card.lostEmail", "auth.card.registerTitle"];
     for (const dict of [nl, en, fr, de] as Record<string, string>[]) for (const k of keys) expect(dict[k], k).toBeTruthy();

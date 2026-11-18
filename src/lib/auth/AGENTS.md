@@ -6,3 +6,6 @@
 
 ## Social onboarding
 - Providers keep disableSignUp; a Google/GitHub/GitLab callback refused with `signup_disabled` whose provider marks the e-mail verified becomes a signed `so.` ticket (state pending_passkey_setup, HttpOnly __Host- cookie, 10 min; social-onboarding.ts) and redirects to /auth/sign-up?onboard=social, where age then passkey run; the account is created and the provider linked only inside the verified passkey ceremony (finalizeEnrollment). Why: every account has a passkey and an abandoned OAuth hand-off leaves no row.
+
+## Auth card tabs and Conditional UI
+- The /login and /register tabs swap the address with History.prototype.replaceState (src/lib/auth/auth-tab-url.ts) and the conditional passkey request runs under one AbortController that is aborted before every explicit ceremony (src/lib/auth/conditional-passkey.ts). Why: TanStack patches window.history.replaceState into a navigation that remounts the card, and browsers allow only one WebAuthn request at a time.

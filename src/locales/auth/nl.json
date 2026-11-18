@@ -407,10 +407,13 @@
   "auth.onboard.expired": "Deze aanmelding is verlopen. Kies opnieuw je account.",
   "auth.card.tabSignin": "Inloggen",
   "auth.card.welcomeBack": "Welkom terug",
-  "auth.card.passkeyHero": "Inloggen met passkey",
+  "auth.card.passkeyHero": "Inloggen met Passkey",
   "auth.card.orAccount": "of met je account",
   "auth.card.continueEmail": "Verder met e-mail",
   "auth.card.lostEmail": "Geen toegang meer tot je e-mail?",
   "auth.card.registerTitle": "Account aanmaken | ROUT",
-  "auth.card.registerDescription": "Maak je ROUT-account aan met een passkey: geen wachtwoord, geen tracking."
+  "auth.card.registerDescription": "Maak je ROUT-account aan met een passkey: geen wachtwoord, geen tracking.",
+  "auth.card.passkeyHeroSignup": "Direct registreren met Passkey",
+  "auth.card.signupHeroHint": "Vul hieronder je e-mail, naam en geboortedatum in. Je passkey wordt meteen aangemaakt met Face ID, Touch ID of je toestelcode.",
+  "auth.card.modeLabel": "Inloggen of account aanmaken"
 }

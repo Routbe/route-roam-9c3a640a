@@ -407,10 +407,13 @@
   "auth.onboard.expired": "This sign-up has expired. Choose your account again.",
   "auth.card.tabSignin": "Sign in",
   "auth.card.welcomeBack": "Welcome back",
-  "auth.card.passkeyHero": "Sign in with passkey",
+  "auth.card.passkeyHero": "Sign in with Passkey",
   "auth.card.orAccount": "or with your account",
   "auth.card.continueEmail": "Continue with email",
   "auth.card.lostEmail": "Lost access to your email?",
   "auth.card.registerTitle": "Create account | ROUT",
-  "auth.card.registerDescription": "Create your ROUT account with a passkey: no password, no tracking."
+  "auth.card.registerDescription": "Create your ROUT account with a passkey: no password, no tracking.",
+  "auth.card.passkeyHeroSignup": "Register instantly with Passkey",
+  "auth.card.signupHeroHint": "Fill in your e-mail, name and date of birth below. Your passkey is created right away with Face ID, Touch ID or your device PIN.",
+  "auth.card.modeLabel": "Sign in or create an account"
 }
