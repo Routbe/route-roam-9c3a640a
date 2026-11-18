@@ -67,7 +67,7 @@ describe("db/0293 support treasury", () => {
   });
 
   it("level 1 needs a signed-in member; levels 2 and 3 never store one", async () => {
-    expect((await create(null, 1, "sepa", 1000, "100000000194", H("1")))[0]!.id).toBeNull();
+    expect(await create(null, 1, "sepa", 1000, "100000000194", H("1"))).toEqual([]);
     const pseudo = (await create(KYC, 2, "stripe", 1000, null, H("2")))[0]!;
     expect(pseudo.attested).toBe(true);
     const rows = await db.query<{ user_id: string | null; attested: boolean }>("select user_id, attested from public.supporter_donations where id = $1", [pseudo.id]);
@@ -75,8 +75,8 @@ describe("db/0293 support treasury", () => {
   });
 
   it("refuses a SEPA donation without structured communication and amounts outside the range", async () => {
-    expect((await create(MEMBER, 1, "sepa", 1000, null, H("3")))[0]!.id).toBeNull();
-    expect((await create(MEMBER, 1, "stripe", 50, null, H("3")))[0]!.id).toBeNull();
+    expect(await create(MEMBER, 1, "sepa", 1000, null, H("3"))).toEqual([]);
+    expect(await create(MEMBER, 1, "stripe", 50, null, H("3"))).toEqual([]);
   });
 
   it("paid donations append the next leaf; the stored siblings rebuild the same root as the TypeScript tree", async () => {
@@ -116,10 +116,10 @@ describe("db/0293 support treasury", () => {
     const rows = await as<{ merkle_index: string | null; privacy_level: number; handle: string | null }>(null, "select * from public.rout_public_treasury_ledger(10)");
     const byLevel = Object.fromEntries(rows.map((r) => [r.privacy_level, r]));
     expect(byLevel[1]).toMatchObject({ handle: "jona" });
-    expect(byLevel[2]).toMatchObject({ handle: null, merkle_index: "1" });
+    expect(byLevel[2]).toMatchObject({ handle: null, merkle_index: 1 });
     expect(byLevel[3]).toMatchObject({ handle: null, merkle_index: null });
     const sum = await as<{ total_cents: string; size: string }>(null, "select * from public.rout_public_treasury_summary()");
-    expect(sum[0]).toMatchObject({ total_cents: "4000", size: "3" });
+    expect(sum[0]).toMatchObject({ total_cents: 4000, size: 3 });
   });
 
   it("the status page needs the access token; only level-1 credentials get a public presentation", async () => {
