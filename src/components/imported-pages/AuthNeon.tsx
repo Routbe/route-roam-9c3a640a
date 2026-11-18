@@ -493,8 +493,8 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
 
           {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
             <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
-              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-10 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
-              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-10 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
+              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
+              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
             </div>
           )}
           {embedded && (
