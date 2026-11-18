@@ -1,8 +1,9 @@
 /**
- * DNSSEC status of partner/supplier domains, asked from a validating resolver over DNS-over-HTTPS
- * (Quad9, Swiss foundation; JSON API). "valid" means the resolver validated the chain and set AD;
- * "unsigned" means the zone has no DNSSEC; "unknown" means the lookup failed. Results are cached
- * per isolate for an hour. The resolver is trusted for this check; the page says so.
+ * DNSSEC status of partner/supplier domains, asked from a validating resolver (Quad9, Swiss
+ * foundation) over DNS-over-HTTPS in RFC 8484 wire format with the EDNS0 DO bit set.
+ * "valid" = the resolver validated the chain and set AD; "unsigned" = answer without AD (no
+ * DNSSEC); "unknown" = the lookup failed. Cached per isolate for an hour. The resolver is
+ * trusted for this check; the page says so.
  */
 export type DnssecState = "valid" | "unsigned" | "unknown";
 
@@ -10,12 +11,24 @@ const TTL_MS = 60 * 60 * 1000;
 const cache = new Map<string, { state: DnssecState; at: number }>();
 const DOMAIN_RE = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 
-export function dnssecFromDoh(json: unknown): DnssecState {
-  const j = json as { Status?: number; AD?: boolean } | null;
-  if (!j || typeof j.Status !== "number") return "unknown";
-  if (j.Status !== 0) return "unknown";
-  return j.AD === true ? "valid" : "unsigned";
+/** SOA query, RD set, one EDNS0 OPT record with DO (RFC 3225). */
+export function dnsQuery(domain: string): Uint8Array {
+  const labels = domain.split(".").flatMap((l) => [l.length, ...Array.from(new TextEncoder().encode(l))]);
+  return new Uint8Array([
+    0, 0, 0x01, 0x00, 0, 1, 0, 0, 0, 0, 0, 1, // header: id 0 (RFC 8484 §4.1), RD, 1 question, 1 additional
+    ...labels, 0, 0, 6, 0, 1, // QNAME, QTYPE SOA, QCLASS IN
+    0, 0, 41, 0x04, 0xd0, 0, 0, 0x80, 0, 0, 0, // OPT: root, type 41, udp 1232, ext-rcode/version 0, DO, rdlen 0
+  ]);
 }
+
+export function dnssecFromWire(bytes: Uint8Array): DnssecState {
+  if (bytes.length < 12) return "unknown";
+  if ((bytes[2]! & 0x80) === 0) return "unknown"; // not a response
+  if ((bytes[3]! & 0x0f) !== 0) return "unknown"; // RCODE ≠ NOERROR (SERVFAIL on a bogus chain)
+  return (bytes[3]! & 0x20) !== 0 ? "valid" : "unsigned";
+}
+
+const b64url = (b: Uint8Array) => btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 export async function dnssecStatus(domain: string, fetcher: typeof fetch = fetch): Promise<DnssecState> {
   const d = domain.trim().toLowerCase();
@@ -24,11 +37,11 @@ export async function dnssecStatus(domain: string, fetcher: typeof fetch = fetch
   if (hit && Date.now() - hit.at < TTL_MS) return hit.state;
   let state: DnssecState = "unknown";
   try {
-    const res = await fetcher(`https://dns.quad9.net:5053/dns-query?name=${encodeURIComponent(d)}&type=SOA&do=1`, {
-      headers: { accept: "application/dns-json" },
+    const res = await fetcher(`https://dns.quad9.net/dns-query?dns=${b64url(dnsQuery(d))}`, {
+      headers: { accept: "application/dns-message" },
       signal: AbortSignal.timeout(3000),
     });
-    if (res.ok) state = dnssecFromDoh(await res.json());
+    if (res.ok) state = dnssecFromWire(new Uint8Array(await res.arrayBuffer()));
   } catch {
     state = "unknown";
   }

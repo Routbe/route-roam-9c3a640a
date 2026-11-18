@@ -16,7 +16,7 @@ import { receiptMessage, transactionHash, type SupportReceipt } from "./receipt"
 import { buildPdf, receiptLines } from "./receipt-pdf";
 import { parseBunqPayment, verifyBunqSignature } from "./bunq-notification";
 import { coverage } from "./coverage";
-import { dnssecFromDoh } from "./dnssec.server";
+import { dnsQuery, dnssecFromWire } from "./dnssec.server";
 import { PARTNERS } from "./partners";
 import { resolveSupportAmount } from "./support.server";
 import { runEnclaveOp } from "@/lib/crypto-enclave/enclave-core";
@@ -232,10 +232,14 @@ describe("coverage, amounts, partners, DNSSEC", () => {
   it("lists suppliers as suppliers, never as partners", () => {
     for (const p of PARTNERS.filter((x) => x.group === "infrastructure")) expect(p.relationship).toBe("supplier");
   });
-  it("reads the resolver's AD flag", () => {
-    expect(dnssecFromDoh({ Status: 0, AD: true })).toBe("valid");
-    expect(dnssecFromDoh({ Status: 0, AD: false })).toBe("unsigned");
-    expect(dnssecFromDoh({ Status: 2, AD: true })).toBe("unknown");
-    expect(dnssecFromDoh(null)).toBe("unknown");
+  it("reads the resolver's AD flag and RCODE from the wire answer", () => {
+    const head = (b2: number, b3: number) => new Uint8Array([0, 0, b2, b3, 0, 1, 0, 1, 0, 0, 0, 1]);
+    expect(dnssecFromWire(head(0x81, 0xa0))).toBe("valid");
+    expect(dnssecFromWire(head(0x81, 0x80))).toBe("unsigned");
+    expect(dnssecFromWire(head(0x81, 0x82))).toBe("unknown"); // SERVFAIL (bogus chain)
+    expect(dnssecFromWire(head(0x01, 0xa0))).toBe("unknown"); // not a response
+    const q = dnsQuery("rout.be");
+    expect(Array.from(q.slice(12, 20))).toEqual([4, 114, 111, 117, 116, 2, 98, 101]);
+    expect(q[q.length - 4]).toBe(0x80); // DO bit
   });
 });
