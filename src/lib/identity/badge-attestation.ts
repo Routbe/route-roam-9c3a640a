@@ -25,7 +25,13 @@ export type BadgeClaims = {
   iat: number;
 };
 
-export type BadgeAttestation = { kid: string; payload: string; sig: string };
+export type BadgeAttestation = {
+  kid: string;
+  payload: string;
+  sig: string;
+  /** Didit cards: hybrid Ed25519 + ML-DSA-65 attestation over the same payload (purpose "didit"). */
+  pq?: import("@/lib/crypto/pq-purposes").PqAttestation | null;
+};
 
 /** Fixed key order, so the signed bytes are reproducible. */
 export function canonicalBadgePayload(c: BadgeClaims): string {

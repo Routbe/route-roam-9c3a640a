@@ -16,6 +16,8 @@ export type SignRequestView = {
   isSigner: boolean;
   signedEnvelope: Uint8Array | null;
   signedAt: string | null;
+  /** Hybrid Ed25519 + ML-DSA-65 attestation over the signed record (null before signing or without a master key). */
+  pqAttestation: import("@/lib/crypto/pq-purposes").PqAttestation | null;
 };
 export type SignRequestSummary = { id: string; status: SignStatus; createdAt: string; expiresAt: string; signedAt: string | null; sizeBytes: number };
 
@@ -49,17 +51,36 @@ export async function openSignRequest(userId: string, id: string): Promise<SignR
     ((await sql`select * from public.rout_sign_request_open(${id}::uuid)`) as Record<string, unknown>[])[0],
   );
   if (!row) return null;
+  const status = String(row["status"]) as SignStatus;
+  const sourceSha256 = String(row["ciphertext_sha256"]);
+  const signedEnvelope = u8(row["signed_ciphertext"]);
+  const signedAt = iso(row["signed_at"]);
   return {
     envelope: u8(row["ciphertext"]) ?? new Uint8Array(),
-    sourceSha256: String(row["ciphertext_sha256"]),
-    status: String(row["status"]) as SignStatus,
+    sourceSha256,
+    status,
     expiresAt: iso(row["expires_at"]) ?? "",
     minReadSeconds: Number(row["min_read_seconds"]),
     isOwner: row["is_owner"] === true,
     isSigner: row["is_signer"] === true,
-    signedEnvelope: u8(row["signed_ciphertext"]),
-    signedAt: iso(row["signed_at"]),
+    signedEnvelope,
+    signedAt,
+    pqAttestation: status === "signed" && signedEnvelope && signedAt ? await attestSigned(id, sourceSha256, signedEnvelope, signedAt) : null,
   };
+}
+
+/** Lines of the hybrid Sign attestation; the browser rebuilds them from what it received. */
+export const signAttestationLines = (id: string, sourceSha256: string, signedSha256: string, signedAt: string) => [id, sourceSha256, signedSha256, signedAt];
+
+async function attestSigned(id: string, sourceSha256: string, signedEnvelope: Uint8Array, signedAt: string) {
+  try {
+    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", signedEnvelope as BufferSource));
+    const signedSha256 = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
+    const { signPq } = await import("@/lib/crypto/hybrid-signer.server");
+    return await signPq("sign", signAttestationLines(id, sourceSha256, signedSha256, signedAt));
+  } catch {
+    return null;
+  }
 }
 
 export async function listMySignRequests(userId: string): Promise<SignRequestSummary[]> {

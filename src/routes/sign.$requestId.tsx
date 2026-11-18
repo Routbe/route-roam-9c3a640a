@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Download, FileSignature, KeyRound } from "lucide-react";
+import { Download, FileSignature, KeyRound, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useSudoMode } from "@/hooks/useSudoMode";
@@ -53,6 +53,7 @@ function SignRequestPage() {
   const [elapsed, setElapsed] = useState(0);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [pqState, setPqState] = useState<"checking" | "valid" | "invalid" | "unavailable" | null>(null);
 
   // The key lives only in the fragment; it is kept for this tab across the sign-in detour, then the URL is cleaned.
   useEffect(() => {
@@ -74,6 +75,26 @@ function SignRequestPage() {
       live = false;
     };
   }, [user, requestId, open, t]);
+
+  // Hybrid server attestation over the signed record, checked in the crypto worker.
+  useEffect(() => {
+    if (!req || req.status !== "signed" || !req.signedEnvelope || !req.signedAt || !req.pqAttestation) return;
+    let live = true;
+    setPqState("checking");
+    const signedAt = req.signedAt;
+    const attestation = req.pqAttestation;
+    void (async () => {
+      const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", b64ToBytes(req.signedEnvelope!) as BufferSource));
+      const signedSha256 = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
+      const { verifyPqAttestation } = await import("@/lib/crypto/pq-verify");
+      return verifyPqAttestation("sign", [requestId, req.sourceSha256, signedSha256, signedAt], attestation);
+    })()
+      .catch(() => "unavailable" as const)
+      .then((state) => live && setPqState(state));
+    return () => {
+      live = false;
+    };
+  }, [req, requestId]);
 
   useEffect(() => {
     if (!req || req.status !== "open" || !fragment) return;
@@ -165,6 +186,12 @@ function SignRequestPage() {
       {user && req && req.status !== "open" && (
         <section className="space-y-3 rounded-2xl border border-border p-5 text-sm">
           <p>{t(`sign.status.${req.status}`)}{req.signedAt ? ` · ${new Date(req.signedAt).toLocaleString()}` : ""}</p>
+          {pqState && (
+            <p className="flex items-center gap-2 text-xs text-muted-foreground" aria-live="polite" data-pq={pqState}>
+              <ShieldCheck className={`h-4 w-4 ${pqState === "valid" ? "text-primary" : pqState === "invalid" ? "text-destructive" : ""}`} aria-hidden />
+              {t(`sign.pq.${pqState}`)}
+            </p>
+          )}
           {req.signedEnvelope && fragment && (
             <Button variant="outline" className="min-h-11" onClick={() => void downloadSigned()}>
               <Download className="mr-2 h-4 w-4" aria-hidden />{t("sign.request.download")}

@@ -41,7 +41,12 @@ export async function signBadgeClaims(claims: BadgeClaims): Promise<BadgeAttesta
     const { ed25519 } = await import("@noble/curves/ed25519.js");
     const payload = canonicalBadgePayload(claims);
     const sig = ed25519.sign(badgeMessage(payload), seed);
-    return { kid: await badgeKeyId(ed25519.getPublicKey(seed)), payload, sig: b64u.encode(sig) };
+    let pq: BadgeAttestation["pq"] = null;
+    if (claims.method === "didit") {
+      const { signPq } = await import("@/lib/crypto/hybrid-signer.server");
+      pq = await signPq("didit", [payload]).catch(() => null);
+    }
+    return { kid: await badgeKeyId(ed25519.getPublicKey(seed)), payload, sig: b64u.encode(sig), ...(pq ? { pq } : {}) };
   } finally {
     seed.fill(0);
   }

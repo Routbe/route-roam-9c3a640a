@@ -64,6 +64,7 @@ export const openSignRequestFn = createServerFn({ method: "POST" })
         isSigner: v.isSigner,
         signedEnvelope: v.signedEnvelope ? bytesToB64(v.signedEnvelope) : null,
         signedAt: v.signedAt,
+        pqAttestation: v.pqAttestation,
       };
     } catch (e) {
       userError(e);
