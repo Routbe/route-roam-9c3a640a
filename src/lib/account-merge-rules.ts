@@ -47,6 +47,11 @@ export const MERGE_TABLES: Readonly<Record<string, MergeTableRule>> = {
   // Support treasury (0293): donations and supporter credentials are money/credential records.
   supporter_donations: r("skip"),
   supporter_credentials: r("skip"),
+  // EUDI wallet (0294): short-lived offers and verification requests, and wallet credentials whose
+  // status index reads as revoked once the row is gone.
+  oid4vci_offers: r("drop"),
+  oid4vp_requests: r("drop"),
+  wallet_credentials: r("drop"),
   // Omni ingestion and live-presence rows (0185-0190) were added after the merge
   // manifest was reviewed: until a move strategy is reviewed, a secondary
   // account that owns any of them blocks the merge instead of losing data.

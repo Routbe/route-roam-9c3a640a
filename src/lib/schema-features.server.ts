@@ -21,6 +21,8 @@ const MARKERS = {
   "0292": "public.rout_public_owner_is_minor(uuid)",
   /** db/0293_support_treasury.sql (support treasury, supporter credentials, partner attestations) */
   "0293": "public.rout_support_create(smallint,text,integer,text,text)",
+  /** db/0294_eudi_wallet.sql (OID4VCI offers, wallet credential status list, OID4VP requests) */
+  "0294": "public.rout_vci_offer_create(text,text,text)",
 } as const;
 export type SchemaFeature = keyof typeof MARKERS;
 
