@@ -361,3 +361,20 @@ export async function readSupporterPresentation(handle: string): Promise<string 
     return null;
   }
 }
+
+/** Stripe events for support donations (metadata.kind = rout_support); null when not ours. */
+export async function applySupportStripeEvent(event: { type?: string; data?: { object?: Record<string, unknown> } }): Promise<string | null> {
+  const object = event.data?.object ?? {};
+  const meta = (object["metadata"] ?? {}) as Record<string, string>;
+  if (meta["kind"] !== "rout_support") return null;
+  if (event.type !== "checkout.session.completed" && event.type !== "checkout.session.async_payment_succeeded") return "support event ignored";
+  if (object["payment_status"] !== "paid") return "support awaiting payment";
+  if (String(object["currency"] ?? "").toLowerCase() !== "eur") return "support currency rejected";
+  const sessionId = typeof object["id"] === "string" ? object["id"] : "";
+  const intent = typeof object["payment_intent"] === "string" ? object["payment_intent"] : "";
+  const cents = Number(object["amount_total"]);
+  if (!sessionId || !Number.isSafeInteger(cents)) return "support malformed";
+  const outcome = await confirmByStripeSession(sessionId, intent, cents);
+  if (outcome === "not_configured" || outcome === "failed") throw new Error(`support_${outcome}`);
+  return `support ${outcome}`;
+}

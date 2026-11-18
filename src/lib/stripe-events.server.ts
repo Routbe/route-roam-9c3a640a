@@ -189,6 +189,11 @@ export async function applyStripeEvent(event: StripeEvent): Promise<string> {
     return credited ? "wallet credited" : "wallet topup duplicate";
   }
 
+  if (meta["kind"] === "rout_support") {
+    const { applySupportStripeEvent } = await import("./support/support.server");
+    return (await applySupportStripeEvent(event as Parameters<typeof applySupportStripeEvent>[0])) ?? "support event ignored";
+  }
+
   if (meta["kind"] === "creator_donation" && meta["donation_id"]) {
     const { markDonation } = await import("./donations.server");
     const ref = stringOf(object, "id");
