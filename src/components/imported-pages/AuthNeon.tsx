@@ -482,6 +482,12 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
         )}
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 sm:p-7" data-testid="auth-card">
+          {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
+            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
+              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
+              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
+            </div>
+          )}
           <div className="mb-4">
             <h1 className="mb-1 font-display text-2xl text-foreground">
               {adminPortal ? t("auth.admin") : mode === "signup" ? t("auth.ui.signup.cta") : mode === "recovery" ? t("auth.pk.recoveryTitle") : mode === "reset" ? t("auth.mf.resetTitle") : t("auth.card.welcomeBack")}
@@ -491,12 +497,6 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
             )}
           </div>
 
-          {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
-            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
-              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
-              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
-            </div>
-          )}
           {embedded && (
             <Alert className="mb-4"><AlertDescription className="flex flex-col gap-2">
               <span>Inloggen en registreren met een passkey werkt niet in dit ingebedde venster. Open de pagina in een nieuw tabblad.</span>
