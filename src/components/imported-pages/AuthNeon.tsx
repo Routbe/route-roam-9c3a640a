@@ -474,7 +474,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
       )}
       <div className="flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center bg-background p-4 text-foreground">
         {!adminPortal && (
-          <div className="w-full max-w-md md:max-w-4xl">
+          <div className="w-full max-w-md">
             <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> {t("auth.ui.back")}
             </Link>
