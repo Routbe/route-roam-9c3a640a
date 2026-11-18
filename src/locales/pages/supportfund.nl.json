@@ -105,6 +105,6 @@
   "pages.supportfund.dnssec.unsigned": "Geen DNSSEC",
   "pages.supportfund.dnssec.unknown": "DNSSEC onbekend",
   "pages.supportfund.dnssec.checking": "DNSSEC controleren…",
-  "pages.supportfund.dnssec.note": "De DNSSEC-status komt van een validerende DNS-resolver (Quad9) en wordt elk uur ververst.",
+  "pages.supportfund.dnssec.note": "De DNSSEC-status komt van een validerende DNS-resolver (DNS4EU, met Cloudflare als terugval) en wordt elk uur ververst.",
   "pages.supportfund.mine.title": "Mijn bijdragen"
 }

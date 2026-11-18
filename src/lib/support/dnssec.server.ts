@@ -1,6 +1,7 @@
 /**
- * DNSSEC status of partner/supplier domains, asked from a validating resolver (Quad9, Swiss
- * foundation) over DNS-over-HTTPS in RFC 8484 wire format with the EDNS0 DO bit set.
+ * DNSSEC status of partner/supplier domains, asked from a validating resolver over
+ * DNS-over-HTTPS in RFC 8484 wire format with the EDNS0 DO bit set: DNS4EU first, Cloudflare
+ * only when DNS4EU does not answer (Quad9 refuses HTTP/1.1 clients).
  * "valid" = the resolver validated the chain and set AD; "unsigned" = answer without AD (no
  * DNSSEC); "unknown" = the lookup failed. Cached per isolate for an hour. The resolver is
  * trusted for this check; the page says so.
@@ -28,6 +29,7 @@ export function dnssecFromWire(bytes: Uint8Array): DnssecState {
   return (bytes[3]! & 0x20) !== 0 ? "valid" : "unsigned";
 }
 
+const RESOLVERS = ["https://unfiltered.joindns4.eu/dns-query", "https://cloudflare-dns.com/dns-query"] as const;
 const b64url = (b: Uint8Array) => btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 export async function dnssecStatus(domain: string, fetcher: typeof fetch = fetch): Promise<DnssecState> {
@@ -36,14 +38,18 @@ export async function dnssecStatus(domain: string, fetcher: typeof fetch = fetch
   const hit = cache.get(d);
   if (hit && Date.now() - hit.at < TTL_MS) return hit.state;
   let state: DnssecState = "unknown";
-  try {
-    const res = await fetcher(`https://dns.quad9.net/dns-query?dns=${b64url(dnsQuery(d))}`, {
-      headers: { accept: "application/dns-message" },
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) state = dnssecFromWire(new Uint8Array(await res.arrayBuffer()));
-  } catch {
-    state = "unknown";
+  for (const resolver of RESOLVERS) {
+    try {
+      const res = await fetcher(`${resolver}?dns=${b64url(dnsQuery(d))}`, {
+        headers: { accept: "application/dns-message" },
+        signal: AbortSignal.timeout(3000),
+      });
+      if (!res.ok) continue;
+      state = dnssecFromWire(new Uint8Array(await res.arrayBuffer()));
+      if (state !== "unknown") break;
+    } catch {
+      /* next resolver */
+    }
   }
   cache.set(d, { state, at: Date.now() });
   return state;

@@ -105,6 +105,6 @@
   "pages.supportfund.dnssec.unsigned": "No DNSSEC",
   "pages.supportfund.dnssec.unknown": "DNSSEC unknown",
   "pages.supportfund.dnssec.checking": "Checking DNSSEC…",
-  "pages.supportfund.dnssec.note": "DNSSEC status comes from a validating DNS resolver (Quad9) and refreshes hourly.",
+  "pages.supportfund.dnssec.note": "DNSSEC status comes from a validating DNS resolver (DNS4EU, with Cloudflare as fallback) and refreshes hourly.",
   "pages.supportfund.mine.title": "My contributions"
 }

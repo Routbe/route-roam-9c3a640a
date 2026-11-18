@@ -105,6 +105,6 @@
   "pages.supportfund.dnssec.unsigned": "Kein DNSSEC",
   "pages.supportfund.dnssec.unknown": "DNSSEC unbekannt",
   "pages.supportfund.dnssec.checking": "DNSSEC wird geprüft…",
-  "pages.supportfund.dnssec.note": "Der DNSSEC-Status stammt von einem validierenden DNS-Resolver (Quad9) und wird stündlich aktualisiert.",
+  "pages.supportfund.dnssec.note": "Der DNSSEC-Status stammt von einem validierenden DNS-Resolver (DNS4EU, Cloudflare als Rückfall) und wird stündlich aktualisiert.",
   "pages.supportfund.mine.title": "Meine Beiträge"
 }
