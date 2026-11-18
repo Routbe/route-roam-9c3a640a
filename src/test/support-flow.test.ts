@@ -125,7 +125,7 @@ describe("support donation flow", () => {
     expect(o.ready).toBe(true);
     expect(o.totalCents).toBe(3500);
     expect(o.ledger.map((e) => [e.level, e.handle, e.index])).toEqual(expect.arrayContaining([[1, "jona", "1"], [2, null, "0"]]));
-    expect(o.coverage.state).toBe("unknown");
+    expect(o.coverage).toMatchObject({ state: "known", costCents: 15090 });
     const mine = await ctx.run({ userId: MEMBER }, () => s.readMyDonations());
     expect(mine).toHaveLength(1);
     expect(mine[0]!.credential).toBeTruthy();
