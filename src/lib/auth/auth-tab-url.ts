@@ -11,17 +11,24 @@ export function authTabPath(pathname: string, tab: AuthTab): string | null {
 }
 
 /**
- * Swaps /login and /register in place with history.replaceState, keeping query, hash and the
- * router's history state, so switching tabs never remounts the card or adds a back-button step.
+ * Native History.prototype.replaceState with the current state kept. TanStack's browser history patches
+ * window.history.replaceState and turns every call into a router navigation, which would remount the
+ * card (and drop what was typed) when /login becomes /register; the prototype method only rewrites the
+ * address. A later popstate or navigation reads the real URL again.
  */
+export function nativeReplaceUrl(url: string) {
+  History.prototype.replaceState.call(window.history, window.history.state, "", url);
+}
+
+/** Swaps /login and /register in place (query and hash kept), without remounting or adding a back-button step. */
 export function syncAuthTabUrl(
   tab: AuthTab,
   loc: Pick<Location, "pathname" | "search" | "hash"> = window.location,
-  history: Pick<History, "replaceState" | "state"> = window.history,
+  replace: (url: string) => void = nativeReplaceUrl,
 ): boolean {
   const next = authTabPath(loc.pathname, tab);
   if (!next || next === loc.pathname) return false;
-  history.replaceState(history.state, "", `${next}${loc.search}${loc.hash}`);
+  replace(`${next}${loc.search}${loc.hash}`);
   return true;
 }
 

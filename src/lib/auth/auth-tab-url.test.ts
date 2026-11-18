@@ -8,18 +8,32 @@ describe("auth card tabs", () => {
     expect(authTabPath("/auth/sign-in", "signup")).toBeNull();
   });
 
-  it("swaps the address with replaceState, keeping query, hash and router state", () => {
-    const state = { __TSR_key: "k1" };
-    const history = { state, replaceState: vi.fn() };
-    expect(syncAuthTabUrl("signup", { pathname: "/login", search: "?redirect=/studio", hash: "#x" }, history)).toBe(true);
-    expect(history.replaceState).toHaveBeenCalledWith(state, "", "/register?redirect=/studio#x");
+  it("swaps the address in place, keeping query and hash", () => {
+    const replace = vi.fn();
+    expect(syncAuthTabUrl("signup", { pathname: "/login", search: "?redirect=/studio", hash: "#x" }, replace)).toBe(true);
+    expect(replace).toHaveBeenCalledWith("/register?redirect=/studio#x");
+  });
+
+  it("uses the native replaceState and keeps the router's history state", () => {
+    window.history.pushState({ __TSR_key: "k1" }, "", "/login");
+    const patched = vi.fn();
+    const original = window.history.replaceState;
+    window.history.replaceState = patched as typeof window.history.replaceState;
+    try {
+      expect(syncAuthTabUrl("signup")).toBe(true);
+    } finally {
+      window.history.replaceState = original;
+    }
+    expect(patched).not.toHaveBeenCalled();
+    expect(window.location.pathname).toBe("/register");
+    expect(window.history.state).toEqual({ __TSR_key: "k1" });
   });
 
   it("leaves the address alone on other routes or when already right", () => {
-    const history = { state: null, replaceState: vi.fn() };
-    expect(syncAuthTabUrl("signup", { pathname: "/auth/sign-in", search: "", hash: "" }, history)).toBe(false);
-    expect(syncAuthTabUrl("signup", { pathname: "/register", search: "", hash: "" }, history)).toBe(false);
-    expect(history.replaceState).not.toHaveBeenCalled();
+    const replace = vi.fn();
+    expect(syncAuthTabUrl("signup", { pathname: "/auth/sign-in", search: "", hash: "" }, replace)).toBe(false);
+    expect(syncAuthTabUrl("signup", { pathname: "/register", search: "", hash: "" }, replace)).toBe(false);
+    expect(replace).not.toHaveBeenCalled();
   });
 
   it("arrow keys switch tabs (wrapping); Home and End jump to the first and last tab", () => {
