@@ -407,10 +407,13 @@
   "auth.onboard.expired": "Cette inscription a expiré. Choisissez à nouveau votre compte.",
   "auth.card.tabSignin": "Se connecter",
   "auth.card.welcomeBack": "Bon retour",
-  "auth.card.passkeyHero": "Se connecter avec une passkey",
+  "auth.card.passkeyHero": "Se connecter avec une Passkey",
   "auth.card.orAccount": "ou avec votre compte",
   "auth.card.continueEmail": "Continuer avec l’e-mail",
   "auth.card.lostEmail": "Vous n’avez plus accès à votre e-mail ?",
   "auth.card.registerTitle": "Créer un compte | ROUT",
-  "auth.card.registerDescription": "Créez votre compte ROUT avec une passkey : sans mot de passe, sans pistage."
+  "auth.card.registerDescription": "Créez votre compte ROUT avec une passkey : sans mot de passe, sans pistage.",
+  "auth.card.passkeyHeroSignup": "S'inscrire directement avec une Passkey",
+  "auth.card.signupHeroHint": "Indiquez ci-dessous votre e-mail, votre nom et votre date de naissance. Votre passkey est créée aussitôt avec Face ID, Touch ID ou le code de votre appareil.",
+  "auth.card.modeLabel": "Se connecter ou créer un compte"
 }

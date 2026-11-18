@@ -412,5 +412,8 @@
   "auth.card.continueEmail": "Weiter mit E-Mail",
   "auth.card.lostEmail": "Kein Zugriff mehr auf deine E-Mail?",
   "auth.card.registerTitle": "Konto erstellen | ROUT",
-  "auth.card.registerDescription": "Erstelle dein ROUT-Konto mit einem Passkey: kein Passwort, kein Tracking."
+  "auth.card.registerDescription": "Erstelle dein ROUT-Konto mit einem Passkey: kein Passwort, kein Tracking.",
+  "auth.card.passkeyHeroSignup": "Direkt mit Passkey registrieren",
+  "auth.card.signupHeroHint": "Gib unten deine E-Mail, deinen Namen und dein Geburtsdatum ein. Dein Passkey wird sofort mit Face ID, Touch ID oder deiner Geräte-PIN erstellt.",
+  "auth.card.modeLabel": "Anmelden oder Konto erstellen"
 }
