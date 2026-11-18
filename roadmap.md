@@ -461,12 +461,12 @@
 - [ ] Owner tests a real passkey sign-in in the preview; add optional service keys (storage, Stripe, email) as needed
 
 ## Support treasury (/support/donations, /support/partners)
-- [x] db/0293 support treasury (replay-tested, NOT applied on Neon; waits for "GO 0293"), snapshot + db types, schema level 0293
+- [x] db/0293 support treasury: applied on Neon 2026-11-18 (owner GO, checksum 9bdffdc2…7d4a), snapshot + db types, schema level 0293
 - [x] Donation flow: SEPA with Belgian structured communication + EPC QR, Stripe Checkout, bunq/Stripe webhooks, Merkle leaf + hybrid-signed root, signed receipt (PDF in browser), supporter SD-JWT VC, inclusion proof
 - [x] Crypto-worker checks for credential, proof and signatures; donor crown on profiles only after the worker verifies the credential
 - [x] Partner wall: suppliers listed as suppliers, live DNSSEC status
-- [ ] Owner: treasury IBAN + account name (ROUT_TREASURY_IBAN / ROUT_TREASURY_NAME, optional ROUT_TREASURY_BIC)
-- [ ] Owner: real monthly server costs (src/lib/support/coverage.ts MONTHLY_COSTS)
+- [x] Treasury name defaults to "ROUT Sovereign Identity OS"; IBAN from ROUT_TREASURY_IBAN, else bunq main EUR account; BIC from ROUT_TREASURY_BIC
+- [ ] Owner: set ROUT_TREASURY_IBAN (or the BUNQ_* keys) in the hosting environment; until then SEPA stays off
+- [x] Monthly server costs: 15,090 cents (Infomaniak 4850, Scaleway 2840, Neon 2900, Didit 4500)
 - [ ] Owner: bunq callback on the treasury account (BUNQ_SERVER_PUBLIC_KEY) and Stripe webhook secret (STRIPE_SUPPORT_WEBHOOK_SECRET or the existing endpoint)
-- [ ] Owner: "GO 0293" before the pages can take donations
-- [ ] Owner decision: post-quantum directive beyond treasury (OID4VCI/OID4VP issuance, accumulators, PQ for every RSG1 envelope)
+- [ ] PQ hybrid signatures beyond treasury, OID4VCI/OID4VP, revocation: phased plan proposed, waits for owner approval
