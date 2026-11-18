@@ -47,6 +47,7 @@ import { Route as ProductRouteImport } from './routes/product'
 import { Route as QrRouteImport } from './routes/qr'
 import { Route as QrCodeGeneratorRouteImport } from './routes/qr-code-generator'
 import { Route as RecoveryRouteImport } from './routes/recovery'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as SecurityRouteImport } from './routes/security'
@@ -646,6 +647,11 @@ const QrCodeGeneratorRoute = QrCodeGeneratorRouteImport.update({
 const RecoveryRoute = RecoveryRouteImport.update({
   id: '/recovery',
   path: '/recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -2867,6 +2873,7 @@ export interface FileRoutesByFullPath {
   '/qr': typeof QrRoute
   '/qr-code-generator': typeof QrCodeGeneratorRouteWithChildren
   '/recovery': typeof RecoveryRoute
+  '/register': typeof RegisterRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/safety': typeof SafetyRouteWithChildren
   '/security': typeof SecurityRoute
@@ -3308,6 +3315,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/qr': typeof QrRoute
   '/recovery': typeof RecoveryRoute
+  '/register': typeof RegisterRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/security': typeof SecurityRoute
   '/self-hosting': typeof SelfHostingRoute
@@ -3752,6 +3760,7 @@ export interface FileRoutesById {
   '/qr': typeof QrRoute
   '/qr-code-generator': typeof QrCodeGeneratorRouteWithChildren
   '/recovery': typeof RecoveryRoute
+  '/register': typeof RegisterRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/safety': typeof SafetyRouteWithChildren
   '/security': typeof SecurityRoute
@@ -4204,6 +4213,7 @@ export interface FileRouteTypes {
     | '/qr'
     | '/qr-code-generator'
     | '/recovery'
+    | '/register'
     | '/robots.txt'
     | '/safety'
     | '/security'
@@ -4645,6 +4655,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/qr'
     | '/recovery'
+    | '/register'
     | '/robots.txt'
     | '/security'
     | '/self-hosting'
@@ -5088,6 +5099,7 @@ export interface FileRouteTypes {
     | '/qr'
     | '/qr-code-generator'
     | '/recovery'
+    | '/register'
     | '/robots.txt'
     | '/safety'
     | '/security'
@@ -5540,6 +5552,7 @@ export interface RootRouteChildren {
   QrRoute: typeof QrRoute
   QrCodeGeneratorRoute: typeof QrCodeGeneratorRouteWithChildren
   RecoveryRoute: typeof RecoveryRoute
+  RegisterRoute: typeof RegisterRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SafetyRoute: typeof SafetyRouteWithChildren
   SecurityRoute: typeof SecurityRoute
@@ -6018,6 +6031,13 @@ declare module '@tanstack/react-router' {
       path: '/recovery'
       fullPath: '/recovery'
       preLoaderRoute: typeof RecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -9565,6 +9585,7 @@ const rootRouteChildren: RootRouteChildren = {
   QrRoute: QrRoute,
   QrCodeGeneratorRoute: QrCodeGeneratorRouteWithChildren,
   RecoveryRoute: RecoveryRoute,
+  RegisterRoute: RegisterRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SafetyRoute: SafetyRouteWithChildren,
   SecurityRoute: SecurityRoute,
