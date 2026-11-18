@@ -459,3 +459,14 @@
 - [x] Keep Neon + passkeys (owner choice)
 - [x] DATABASE_URL, BETTER_AUTH_SECRET, ROUT_VAULT_KEK added; database reachable (schema 0291)
 - [ ] Owner tests a real passkey sign-in in the preview; add optional service keys (storage, Stripe, email) as needed
+
+## Support treasury (/support/donations, /support/partners)
+- [x] db/0293 support treasury (replay-tested, NOT applied on Neon; waits for "GO 0293"), snapshot + db types, schema level 0293
+- [x] Donation flow: SEPA with Belgian structured communication + EPC QR, Stripe Checkout, bunq/Stripe webhooks, Merkle leaf + hybrid-signed root, signed receipt (PDF in browser), supporter SD-JWT VC, inclusion proof
+- [x] Crypto-worker checks for credential, proof and signatures; donor crown on profiles only after the worker verifies the credential
+- [x] Partner wall: suppliers listed as suppliers, live DNSSEC status
+- [ ] Owner: treasury IBAN + account name (ROUT_TREASURY_IBAN / ROUT_TREASURY_NAME, optional ROUT_TREASURY_BIC)
+- [ ] Owner: real monthly server costs (src/lib/support/coverage.ts MONTHLY_COSTS)
+- [ ] Owner: bunq callback on the treasury account (BUNQ_SERVER_PUBLIC_KEY) and Stripe webhook secret (STRIPE_SUPPORT_WEBHOOK_SECRET or the existing endpoint)
+- [ ] Owner: "GO 0293" before the pages can take donations
+- [ ] Owner decision: post-quantum directive beyond treasury (OID4VCI/OID4VP issuance, accumulators, PQ for every RSG1 envelope)
