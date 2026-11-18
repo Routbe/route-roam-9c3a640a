@@ -279,7 +279,7 @@ function DonateForm({ overview }: { overview: SupportOverview }) {
   }
 
   const option = (on: boolean) =>
-    cn("flex min-h-11 w-full cursor-pointer flex-col items-start gap-0.5 rounded-lg border p-3 text-left transition-colors", on ? "border-foreground bg-muted/60" : "border-border/60 hover:bg-muted/40");
+    cn("flex min-h-11 w-full cursor-pointer flex-col items-start gap-0.5 rounded-lg border p-3 text-left transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring", on ? "border-foreground bg-muted/60" : "border-border/60 hover:bg-muted/40");
 
   return (
     <form className={cn(card, "space-y-6")} onSubmit={submit} onFocusCapture={() => setArmed(true)} noValidate>
