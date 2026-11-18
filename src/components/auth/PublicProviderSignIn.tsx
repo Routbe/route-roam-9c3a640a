@@ -24,7 +24,7 @@ export function PublicProviderSignIn({
   passkey?: { label: string; onSelect: () => void };
   /** Where Better Auth sends a failed sign-in; it appends `?error=<code>` itself. */
   errorPath?: string;
-  /** One quiet icon row on every screen size (auth card); Google keeps its brand colours. */
+  /** One quiet monochrome icon row on every screen size (auth card), Google included. */
   compact?: boolean;
 }) {
   const { t } = useTranslation();
@@ -53,10 +53,10 @@ export function PublicProviderSignIn({
       {AUTH_PROVIDERS.map(provider => {
         const available = providerAvailable(provider.id, configured, readiness);
         return <Button key={provider.id} type="button" variant="outline" size="icon" aria-label={t("auth.provider.continue", { name: provider.label })}
-          className={`h-11 w-11 rounded-xl ${compact && provider.id !== "google" ? "text-muted-foreground grayscale transition hover:text-foreground hover:grayscale-0" : ""}`} disabled={disabled || busy !== null || !available}
+          className={`h-11 w-11 rounded-xl ${compact ? "text-muted-foreground transition-colors hover:text-foreground" : ""}`} disabled={disabled || busy !== null || !available}
           title={!available ? t("auth.provider.config", { name: provider.label }) : provider.label}
           onClick={() => void signIn(provider)}>
-          {busy === provider.id ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : <ProviderMark id={provider.id} />}
+          {busy === provider.id ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : <ProviderMark id={provider.id} mono={compact} />}
         </Button>;
       })}
     </div>

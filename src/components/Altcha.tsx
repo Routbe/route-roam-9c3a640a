@@ -7,10 +7,12 @@ import { prefetchProof } from "@/lib/altcha-client";
  * Self-hosted bot check (ALTCHA proof-of-work). No puzzle for people: the
  * browser prepares the proof in the background while the form is filled in.
  * Forms call `takeProof()` at submit; this only warms it up and shows a quiet line.
+ * With `active={false}` nothing is solved until the form flips it (the auth card does so on
+ * the e-mail field's first focus); the line keeps its place so nothing shifts.
  */
-export function Altcha({ className = "" }: { className?: string }) {
+export function Altcha({ className = "", active = true }: { className?: string; /** false: wait (e.g. until the e-mail field is focused) before solving. */ active?: boolean }) {
   const { t } = useTranslation();
-  const [state, setState] = useState<"working" | "ready" | "error">("working");
+  const [state, setState] = useState<"idle" | "working" | "ready" | "error">(active ? "working" : "idle");
 
   const start = useCallback(() => {
     setState("working");
@@ -20,8 +22,8 @@ export function Altcha({ className = "" }: { className?: string }) {
   }, []);
 
   useEffect(() => {
-    start();
-  }, [start]);
+    if (active) start();
+  }, [start, active]);
 
   if (state === "error") {
     return (
