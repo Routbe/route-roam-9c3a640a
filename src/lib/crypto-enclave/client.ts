@@ -399,6 +399,26 @@ export const enclave = {
       return callEnclave("badge.verify", { message: m, signature: s, publicKey: k }, moved(m, s, k));
     },
   },
+  support: {
+    /** Hybrid Ed25519 ‖ ML-DSA-65 check (copies are transferred). */
+    verifyHybrid: (message: Uint8Array, sig: { ed25519: Uint8Array; mldsa65: Uint8Array | null }, pk: { ed25519: Uint8Array; mldsa65: Uint8Array | null }, requirePq = false) => {
+      const m = message.slice();
+      const e = sig.ed25519.slice();
+      const q = sig.mldsa65 ? sig.mldsa65.slice() : null;
+      const ek = pk.ed25519.slice();
+      const qk = pk.mldsa65 ? pk.mldsa65.slice() : null;
+      return callEnclave("support.verify_hybrid", { message: m, ed25519: e, mldsa65: q, edPublicKey: ek, pqPublicKey: qk, requirePq }, moved(m, e, q ?? undefined, ek, qk ?? undefined));
+    },
+    verifyVc: (compact: string, edPublicKey: Uint8Array, kid: string) => {
+      const k = edPublicKey.slice();
+      return callEnclave("support.verify_vc", { compact, edPublicKey: k, kid, now: Date.now() }, moved(k));
+    },
+    verifyInclusion: (proof: string, pk: { ed25519: Uint8Array; mldsa65: Uint8Array | null; kid: string }) => {
+      const ek = pk.ed25519.slice();
+      const qk = pk.mldsa65 ? pk.mldsa65.slice() : null;
+      return callEnclave("support.verify_inclusion", { proof, edPublicKey: ek, pqPublicKey: qk, kid: pk.kid }, moved(ek, qk ?? undefined));
+    },
+  },
   bhm: {
     match: (clientId: string, hashes: string[], identities: { kind: string; value: string }[]) =>
       callEnclave("bhm.match", { clientId, hashes, identities }),

@@ -173,6 +173,21 @@ export interface EnclaveOps {
   "hash.sha256Hex": { req: { text: string }; res: string };
   /** Blue-mark card: Ed25519 check of ROUT's attestation (badge-attestation.ts) against the published key. */
   "badge.verify": { req: { message: Uint8Array; signature: Uint8Array; publicKey: Uint8Array }; res: { valid: boolean } };
+  /** Support treasury (src/lib/support): hybrid Ed25519 ‖ ML-DSA-65 check of receipts, roots and partner attestations. */
+  "support.verify_hybrid": {
+    req: { message: Uint8Array; ed25519: Uint8Array; mldsa65: Uint8Array | null; edPublicKey: Uint8Array; pqPublicKey: Uint8Array | null; requirePq: boolean };
+    res: { valid: boolean; pq: boolean };
+  };
+  /** Supporter SD-JWT VC: disclosures, expiry and the issuer's EdDSA signature. */
+  "support.verify_vc": {
+    req: { compact: string; edPublicKey: Uint8Array; kid: string; now: number };
+    res: { valid: boolean; reason: string | null; claims: Record<string, unknown> | null };
+  };
+  /** Treasury inclusion proof: Merkle path (+ opening) and the hybrid signature of its root. */
+  "support.verify_inclusion": {
+    req: { proof: string; edPublicKey: Uint8Array; pqPublicKey: Uint8Array | null; kid: string };
+    res: { valid: boolean; pq: boolean; reason: string | null };
+  };
 
   // ---- Password engine (Stap 3): Hashcash, paranoid input, OPAQUE + Argon2id ----
 
