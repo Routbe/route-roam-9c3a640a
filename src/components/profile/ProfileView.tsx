@@ -132,6 +132,7 @@ import { profileText } from "@/lib/profile-i18n";
 import { useI18n } from "@/lib/i18n";
 import { showsSupporterCrown } from "@/lib/badge-rules";
 import { SupporterCrownBadge } from "./SupporterCrownBadge";
+import { VerifiedSupporterCrown } from "@/components/support/VerifiedSupporterCrown";
 import { useServerFn } from "@tanstack/react-start";
 import { recordLinkClickFn } from "@/lib/visits.functions";
 import { initialsFrom } from "@/components/UserAvatar";
@@ -557,6 +558,10 @@ export function ProfileView({
             />
           )}
           {showSupporter && <SupporterCrownBadge color="var(--supporter-gold)" />}
+          {/* Donors: the crown appears only after the crypto worker verified their supporter credential. */}
+          {!showSupporter && !free && !publicPath?.startsWith("/w/") && prefs.supporterBadgeVisible !== false && profile.username && (
+            <VerifiedSupporterCrown handle={profile.username} />
+          )}
           {earlyBeliever && (
             <PioneerBadge
               badgeId={profile.early_believer_id ?? null}
