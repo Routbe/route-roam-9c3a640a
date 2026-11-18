@@ -19,6 +19,8 @@ const MARKERS = {
   "0291": "public.rout_my_age_floor()",
   /** db/0292_public_owner_minor.sql (under-18 check for the public blue-mark card) */
   "0292": "public.rout_public_owner_is_minor(uuid)",
+  /** db/0293_support_treasury.sql (support treasury, supporter credentials, partner attestations) */
+  "0293": "public.rout_support_create(smallint,text,integer,text,text)",
 } as const;
 export type SchemaFeature = keyof typeof MARKERS;
 

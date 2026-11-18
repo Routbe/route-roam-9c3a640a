@@ -58,6 +58,9 @@ import { hostBookingKeyDoc, hostRefOf, MAX_SEALED_HOSTS, type HostBookingKeyDoc 
 import { vaultContext } from "@/lib/vault/vault-context";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { ed25519 } from "@noble/curves/ed25519.js";
+import { b64uDecode, treasuryRootMessage, verifyHybridBytes } from "@/lib/support/hybrid-signature";
+import { verifySupporterVc } from "@/lib/support/supporter-vc";
+import { checkInclusionProof } from "@/lib/support/treasury-tree";
 import { CHALLENGE_RE, recoveryLoginMessage } from "@/lib/recovery/recovery-login";
 import { cardFactorKeys } from "./card-factor";
 import { derivePseudonym, PseudonymInputError } from "./pseudonyms";
@@ -1864,6 +1867,49 @@ const coreHandlers: CoreHandlers = {
     } catch {
       return { valid: false };
     }
+  },
+
+  async "support.verify_hybrid"({ message, ed25519: edSig, mldsa65, edPublicKey, pqPublicKey, requirePq }) {
+    const m = bytes(message);
+    if (m.byteLength === 0 || m.byteLength > 8192) fail("invalid_input");
+    return verifyHybridBytes(
+      m,
+      { ed25519: bytes(edSig), mldsa65: mldsa65 === null ? null : bytes(mldsa65) },
+      { ed25519: bytes(edPublicKey), mldsa65: pqPublicKey === null ? null : bytes(pqPublicKey) },
+      { requirePq: requirePq === true },
+    );
+  },
+
+  async "support.verify_vc"({ compact, edPublicKey, kid, now }) {
+    const pk = bytes(edPublicKey);
+    const issuerKid = str(kid, 64);
+    const at = typeof now === "number" && Number.isFinite(now) ? now : fail("invalid_input");
+    const r = await verifySupporterVc(str(compact, 8192), (input, sig, headerKid) => headerKid === issuerKid && pk.byteLength === 32 && ed25519.verify(sig, input, pk), at);
+    return r.valid ? { valid: true, reason: null, claims: r.claims as Record<string, unknown> } : { valid: false, reason: r.reason, claims: null };
+  },
+
+  async "support.verify_inclusion"({ proof, edPublicKey, pqPublicKey, kid }) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(str(proof, 65536));
+    } catch {
+      return { valid: false, pq: false, reason: "malformed" };
+    }
+    const checked = checkInclusionProof(parsed);
+    if (!checked.ok) return { valid: false, pq: false, reason: checked.reason };
+    const root = checked.proof.signedRoot;
+    if (root.kid !== str(kid, 64)) return { valid: false, pq: false, reason: "kid" };
+    let sig: { ed25519: Uint8Array; mldsa65: Uint8Array | null };
+    try {
+      sig = { ed25519: b64uDecode(root.ed25519), mldsa65: root.mldsa65 ? b64uDecode(root.mldsa65) : null };
+    } catch {
+      return { valid: false, pq: false, reason: "signature" };
+    }
+    const v = verifyHybridBytes(treasuryRootMessage(root.size, root.root), sig, {
+      ed25519: bytes(edPublicKey),
+      mldsa65: pqPublicKey === null ? null : bytes(pqPublicKey),
+    });
+    return v.valid ? { valid: true, pq: v.pq, reason: null } : { valid: false, pq: false, reason: "signature" };
   },
 
   async "hash.sha256Hex"({ text }) {

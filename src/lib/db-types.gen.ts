@@ -1442,6 +1442,17 @@ export interface PublicParentAuthorizationsRow {
   "created_at": string | Date;
 }
 
+export interface PublicPartnerAttestationsRow {
+  "domain": string;
+  "dnssec": boolean;
+  "did_web": boolean;
+  "payload": string;
+  "kid": string;
+  "sig_ed25519": string;
+  "sig_mldsa65": string | null;
+  "checked_at": string | Date;
+}
+
 export interface PublicPhoneOtpCodesRow {
   "id": string;
   "user_id": string;
@@ -2114,6 +2125,40 @@ export interface PublicSubdomainRootClaimsRow {
   "status": string;
 }
 
+export interface PublicSupporterCredentialsRow {
+  "id": string;
+  "donation_id": string;
+  "user_id": string | null;
+  "jti_hash": string;
+  "ciphertext": string;
+  "iv": string;
+  "presentation": string | null;
+  "issued_at": string | Date;
+  "expires_at": string | Date;
+  "revoked_at": string | Date | null;
+}
+
+export interface PublicSupporterDonationsRow {
+  "id": string;
+  "privacy_level": number;
+  "rail": string;
+  "user_id": string | null;
+  "attested": boolean;
+  "amount_cents": number;
+  "currency": string;
+  "ogm": string | null;
+  "provider_ref": string | null;
+  "access_hash": string;
+  "status": string;
+  "confirmed_via": string | null;
+  "merkle_index": string | null;
+  "leaf": string | null;
+  "tx_hash": string | null;
+  "receipt": JsonValue | null;
+  "created_at": string | Date;
+  "paid_at": string | Date | null;
+}
+
 export interface PublicTelegramVerifySessionsRow {
   "chat_id": string;
   "phone_enc": string;
@@ -2152,6 +2197,21 @@ export interface PublicTrackedQrsRow {
   "created_at": string | Date;
   "updated_at": string | Date;
   "workspace_id": string | null;
+}
+
+export interface PublicTreasuryMerkleNodesRow {
+  "level": number;
+  "idx": string;
+  "hash": string;
+}
+
+export interface PublicTreasuryRootsRow {
+  "size": string;
+  "root": string;
+  "kid": string;
+  "sig_ed25519": string;
+  "sig_mldsa65": string | null;
+  "signed_at": string | Date;
 }
 
 export interface PublicUploadRateLimitsRow {
@@ -2867,6 +2927,7 @@ export interface DbTables {
   "public.onboarding_drafts": PublicOnboardingDraftsRow;
   "public.pairwise_subjects": PublicPairwiseSubjectsRow;
   "public.parent_authorizations": PublicParentAuthorizationsRow;
+  "public.partner_attestations": PublicPartnerAttestationsRow;
   "public.phone_otp_codes": PublicPhoneOtpCodesRow;
   "public.physical_key_events": PublicPhysicalKeyEventsRow;
   "public.physical_keys": PublicPhysicalKeysRow;
@@ -2920,9 +2981,13 @@ export interface DbTables {
   "public.social_grid_items": PublicSocialGridItemsRow;
   "public.social_links": PublicSocialLinksRow;
   "public.subdomain_root_claims": PublicSubdomainRootClaimsRow;
+  "public.supporter_credentials": PublicSupporterCredentialsRow;
+  "public.supporter_donations": PublicSupporterDonationsRow;
   "public.telegram_verify_sessions": PublicTelegramVerifySessionsRow;
   "public.tip_settings": PublicTipSettingsRow;
   "public.tracked_qrs": PublicTrackedQrsRow;
+  "public.treasury_merkle_nodes": PublicTreasuryMerkleNodesRow;
+  "public.treasury_roots": PublicTreasuryRootsRow;
   "public.upload_rate_limits": PublicUploadRateLimitsRow;
   "public.used_nonces": PublicUsedNoncesRow;
   "public.user_assets": PublicUserAssetsRow;
