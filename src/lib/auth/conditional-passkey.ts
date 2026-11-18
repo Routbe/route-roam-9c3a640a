@@ -31,7 +31,7 @@ type AuthOptionsJSON = {
 function browserEnv(): ConditionalPasskeyEnv {
   const w = typeof window === "undefined" ? undefined : window;
   return {
-    fetch: (...args) => fetch(...args),
+    fetch: (input, init) => fetch(input, init),
     credentials: w?.navigator?.credentials,
     pkc: w?.PublicKeyCredential as PkcLike | undefined,
   };

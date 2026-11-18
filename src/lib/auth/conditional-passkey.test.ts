@@ -16,7 +16,7 @@ function env(overrides: Partial<ConditionalPasskeyEnv> = {}) {
       ? new Response(JSON.stringify({ challenge: "AQID", rpId: "rout.be", userVerification: "required", allowCredentials: [{ id: "x", type: "public-key" }] }))
       : new Response("{}", { status: 200 }),
   );
-  const get = vi.fn(async () => credential as unknown as Credential);
+  const get = vi.fn(async (_opts?: CredentialRequestOptions) => credential as unknown as Credential);
   return {
     fetchMock,
     get,
@@ -29,7 +29,7 @@ describe("WebAuthn conditional mediation on the auth card", () => {
     const { env: e, get } = env();
     const controller = new AbortController();
     await runConditionalPasskey(controller.signal, e);
-    const call = get.mock.calls[0]?.[0] as unknown as CredentialRequestOptions;
+    const call = get.mock.calls[0]?.[0] as CredentialRequestOptions;
     expect(call.mediation).toBe("conditional");
     expect(call.signal).toBe(controller.signal);
     expect(call.publicKey?.allowCredentials).toEqual([]);
