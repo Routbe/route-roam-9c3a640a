@@ -481,7 +481,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
           </div>
         )}
 
-        <div className={`w-full rounded-2xl border border-border bg-card p-5 sm:p-7 ${!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" ? "max-w-md" : "max-w-md"}`} data-testid="auth-card">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 sm:p-7" data-testid="auth-card">
           <div className="mb-4">
             <h1 className="mb-1 font-display text-2xl text-foreground">
               {adminPortal ? t("auth.admin") : mode === "signup" ? t("auth.ui.signup.cta") : mode === "recovery" ? t("auth.pk.recoveryTitle") : mode === "reset" ? t("auth.mf.resetTitle") : t("auth.card.welcomeBack")}
