@@ -286,15 +286,8 @@ as $function$
    limit 1
 $function$;
 
-create or replace function public.rout_support_save_partner(p_domain text, p_dnssec boolean, p_did_web boolean, p_payload text,
-  p_kid text, p_sig_ed text, p_sig_pq text, p_checked_at timestamptz)
- returns void language sql volatile security definer set search_path = pg_catalog, pg_temp
-as $function$
-  insert into public.partner_attestations (domain, dnssec, did_web, payload, kid, sig_ed25519, sig_mldsa65, checked_at)
-  values (p_domain, p_dnssec, p_did_web, p_payload, p_kid, p_sig_ed, p_sig_pq, p_checked_at)
-  on conflict (domain) do update set dnssec = excluded.dnssec, did_web = excluded.did_web, payload = excluded.payload,
-    kid = excluded.kid, sig_ed25519 = excluded.sig_ed25519, sig_mldsa65 = excluded.sig_mldsa65, checked_at = excluded.checked_at
-$function$;
+-- No writer for partner_attestations yet: one arrives with the first real partner agreement,
+-- behind an admin check. Until then the table stays empty and the page lists suppliers only.
 
 create or replace function public.rout_public_partner_attestations()
  returns table(domain text, payload text, kid text, sig_ed25519 text, sig_mldsa65 text, checked_at timestamptz)
@@ -314,7 +307,6 @@ revoke all on function public.rout_support_mine() from public;
 revoke all on function public.rout_public_treasury_ledger(integer) from public;
 revoke all on function public.rout_public_treasury_summary() from public;
 revoke all on function public.rout_public_supporter_presentation(text) from public;
-revoke all on function public.rout_support_save_partner(text, boolean, boolean, text, text, text, text, timestamptz) from public;
 revoke all on function public.rout_public_partner_attestations() from public;
 grant execute on function public.rout_support_create(smallint, text, integer, text, text) to rout_app;
 grant execute on function public.rout_support_set_provider_ref(uuid, text, text) to rout_app;
@@ -327,7 +319,6 @@ grant execute on function public.rout_support_mine() to rout_app;
 grant execute on function public.rout_public_treasury_ledger(integer) to rout_app;
 grant execute on function public.rout_public_treasury_summary() to rout_app;
 grant execute on function public.rout_public_supporter_presentation(text) to rout_app;
-grant execute on function public.rout_support_save_partner(text, boolean, boolean, text, text, text, text, timestamptz) to rout_app;
 grant execute on function public.rout_public_partner_attestations() to rout_app;
 
 -- Account merge: donations and supporter credentials are money/credential records (strategy "skip"

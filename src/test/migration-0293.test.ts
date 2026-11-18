@@ -132,13 +132,23 @@ describe("db/0293 support treasury", () => {
     expect(await as(KYC, "select * from public.rout_support_mine()")).toEqual([]);
   });
 
+  it("a merge is refused while the secondary account owns a donation or credential", async () => {
+    const def = (await db.query<{ d: string }>("select pg_get_functiondef('public.execute_account_merge(text,text,text,text)'::regprocedure) as d")).rows[0]!.d;
+    const del = def.indexOf("delete from public.users where id=v_secondary");
+    for (const t of ["supporter_donations", "supporter_credentials"]) {
+      const at = def.indexOf(`'merge_blocked:${t}'`);
+      expect(at, t).toBeGreaterThan(0);
+      expect(at, t).toBeLessThan(del);
+    }
+  });
+
   it("every new function is a definer with the safe search_path; PUBLIC cannot execute them", async () => {
     const r = await db.query<{ fn: string; definer: boolean; path: string | null; anyone: boolean; app: boolean }>(`
       select p.oid::regprocedure::text as fn, p.prosecdef as definer, pg_catalog.array_to_string(p.proconfig, ',') as path,
              has_function_privilege('public', p.oid, 'execute') as anyone, has_function_privilege('rout_app', p.oid, 'execute') as app
         from pg_proc p where p.pronamespace = 'public'::regnamespace
          and (p.proname like 'rout_support_%' or p.proname like 'rout_public_treasury_%' or p.proname in ('rout_public_supporter_presentation', 'rout_public_partner_attestations'))`);
-    expect(r.rows.length).toBe(13);
+    expect(r.rows.length).toBe(12);
     for (const row of r.rows) expect(row, row.fn).toMatchObject({ definer: true, path: "search_path=pg_catalog, pg_temp", anyone: false, app: true });
   });
 });
