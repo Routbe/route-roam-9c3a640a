@@ -426,7 +426,10 @@ import { Route as ApiV1AgentVaultRouteImport } from './routes/api_.v1.agent.vaul
 import { Route as ApiV1AuthSudoRouteImport } from './routes/api_.v1.auth.sudo'
 import { Route as ApiV1KycStatusRouteImport } from './routes/api_.v1.kyc.status'
 import { Route as ApiV1LedgerEventsRouteImport } from './routes/api_.v1.ledger.events'
+import { Route as ApiV1PaymentsBunqWebhookRouteImport } from './routes/api_.v1.payments.bunq-webhook'
+import { Route as ApiV1PaymentsStripeWebhookRouteImport } from './routes/api_.v1.payments.stripe-webhook'
 import { Route as ApiV1PowChallengeRouteImport } from './routes/api_.v1.pow.challenge'
+import { Route as ApiV1SupportCheckoutRouteImport } from './routes/api_.v1.support.checkout'
 import { Route as ApiV1WorkspacesCommitRouteImport } from './routes/api_.v1.workspaces.commit'
 import { Route as ApiWalletKindIdRouteImport } from './routes/api_.wallet.$kind.$id'
 import { Route as ApiWalletRenderHeroDotpngRouteImport } from './routes/api_.wallet.render.hero[.]png'
@@ -2641,9 +2644,26 @@ const ApiV1LedgerEventsRoute = ApiV1LedgerEventsRouteImport.update({
   path: '/api/v1/ledger/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1PaymentsBunqWebhookRoute =
+  ApiV1PaymentsBunqWebhookRouteImport.update({
+    id: '/api_/v1/payments/bunq-webhook',
+    path: '/api/v1/payments/bunq-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1PaymentsStripeWebhookRoute =
+  ApiV1PaymentsStripeWebhookRouteImport.update({
+    id: '/api_/v1/payments/stripe-webhook',
+    path: '/api/v1/payments/stripe-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1PowChallengeRoute = ApiV1PowChallengeRouteImport.update({
   id: '/api_/v1/pow/challenge',
   path: '/api/v1/pow/challenge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1SupportCheckoutRoute = ApiV1SupportCheckoutRouteImport.update({
+  id: '/api_/v1/support/checkout',
+  path: '/api/v1/support/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1WorkspacesCommitRoute = ApiV1WorkspacesCommitRouteImport.update({
@@ -3251,7 +3271,10 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api/v1/ledger/events': typeof ApiV1LedgerEventsRoute
+  '/api/v1/payments/bunq-webhook': typeof ApiV1PaymentsBunqWebhookRoute
+  '/api/v1/payments/stripe-webhook': typeof ApiV1PaymentsStripeWebhookRoute
   '/api/v1/pow/challenge': typeof ApiV1PowChallengeRoute
+  '/api/v1/support/checkout': typeof ApiV1SupportCheckoutRoute
   '/api/v1/workspaces/commit': typeof ApiV1WorkspacesCommitRoute
   '/api/wallet/$kind/$id': typeof ApiWalletKindIdRoute
   '/api/wallet/render/hero.png': typeof ApiWalletRenderHeroDotpngRoute
@@ -3685,7 +3708,10 @@ export interface FileRoutesByTo {
   '/api/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api/v1/ledger/events': typeof ApiV1LedgerEventsRoute
+  '/api/v1/payments/bunq-webhook': typeof ApiV1PaymentsBunqWebhookRoute
+  '/api/v1/payments/stripe-webhook': typeof ApiV1PaymentsStripeWebhookRoute
   '/api/v1/pow/challenge': typeof ApiV1PowChallengeRoute
+  '/api/v1/support/checkout': typeof ApiV1SupportCheckoutRoute
   '/api/v1/workspaces/commit': typeof ApiV1WorkspacesCommitRoute
   '/api/wallet/$kind/$id': typeof ApiWalletKindIdRoute
   '/api/wallet/render/hero.png': typeof ApiWalletRenderHeroDotpngRoute
@@ -4138,7 +4164,10 @@ export interface FileRoutesById {
   '/api_/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api_/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api_/v1/ledger/events': typeof ApiV1LedgerEventsRoute
+  '/api_/v1/payments/bunq-webhook': typeof ApiV1PaymentsBunqWebhookRoute
+  '/api_/v1/payments/stripe-webhook': typeof ApiV1PaymentsStripeWebhookRoute
   '/api_/v1/pow/challenge': typeof ApiV1PowChallengeRoute
+  '/api_/v1/support/checkout': typeof ApiV1SupportCheckoutRoute
   '/api_/v1/workspaces/commit': typeof ApiV1WorkspacesCommitRoute
   '/api_/wallet/$kind/$id': typeof ApiWalletKindIdRoute
   '/api_/wallet/render/hero.png': typeof ApiWalletRenderHeroDotpngRoute
@@ -4591,7 +4620,10 @@ export interface FileRouteTypes {
     | '/api/v1/auth/sudo'
     | '/api/v1/kyc/status'
     | '/api/v1/ledger/events'
+    | '/api/v1/payments/bunq-webhook'
+    | '/api/v1/payments/stripe-webhook'
     | '/api/v1/pow/challenge'
+    | '/api/v1/support/checkout'
     | '/api/v1/workspaces/commit'
     | '/api/wallet/$kind/$id'
     | '/api/wallet/render/hero.png'
@@ -5025,7 +5057,10 @@ export interface FileRouteTypes {
     | '/api/v1/auth/sudo'
     | '/api/v1/kyc/status'
     | '/api/v1/ledger/events'
+    | '/api/v1/payments/bunq-webhook'
+    | '/api/v1/payments/stripe-webhook'
     | '/api/v1/pow/challenge'
+    | '/api/v1/support/checkout'
     | '/api/v1/workspaces/commit'
     | '/api/wallet/$kind/$id'
     | '/api/wallet/render/hero.png'
@@ -5477,7 +5512,10 @@ export interface FileRouteTypes {
     | '/api_/v1/auth/sudo'
     | '/api_/v1/kyc/status'
     | '/api_/v1/ledger/events'
+    | '/api_/v1/payments/bunq-webhook'
+    | '/api_/v1/payments/stripe-webhook'
     | '/api_/v1/pow/challenge'
+    | '/api_/v1/support/checkout'
     | '/api_/v1/workspaces/commit'
     | '/api_/wallet/$kind/$id'
     | '/api_/wallet/render/hero.png'
@@ -5751,7 +5789,10 @@ export interface RootRouteChildren {
   ApiV1AuthSudoRoute: typeof ApiV1AuthSudoRoute
   ApiV1KycStatusRoute: typeof ApiV1KycStatusRoute
   ApiV1LedgerEventsRoute: typeof ApiV1LedgerEventsRoute
+  ApiV1PaymentsBunqWebhookRoute: typeof ApiV1PaymentsBunqWebhookRoute
+  ApiV1PaymentsStripeWebhookRoute: typeof ApiV1PaymentsStripeWebhookRoute
   ApiV1PowChallengeRoute: typeof ApiV1PowChallengeRoute
+  ApiV1SupportCheckoutRoute: typeof ApiV1SupportCheckoutRoute
   ApiV1WorkspacesCommitRoute: typeof ApiV1WorkspacesCommitRoute
   ApiWalletKindIdRoute: typeof ApiWalletKindIdRoute
   ApiWalletRenderHeroDotpngRoute: typeof ApiWalletRenderHeroDotpngRoute
@@ -8686,11 +8727,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1LedgerEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/v1/payments/bunq-webhook': {
+      id: '/api_/v1/payments/bunq-webhook'
+      path: '/api/v1/payments/bunq-webhook'
+      fullPath: '/api/v1/payments/bunq-webhook'
+      preLoaderRoute: typeof ApiV1PaymentsBunqWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/v1/payments/stripe-webhook': {
+      id: '/api_/v1/payments/stripe-webhook'
+      path: '/api/v1/payments/stripe-webhook'
+      fullPath: '/api/v1/payments/stripe-webhook'
+      preLoaderRoute: typeof ApiV1PaymentsStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/v1/pow/challenge': {
       id: '/api_/v1/pow/challenge'
       path: '/api/v1/pow/challenge'
       fullPath: '/api/v1/pow/challenge'
       preLoaderRoute: typeof ApiV1PowChallengeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/v1/support/checkout': {
+      id: '/api_/v1/support/checkout'
+      path: '/api/v1/support/checkout'
+      fullPath: '/api/v1/support/checkout'
+      preLoaderRoute: typeof ApiV1SupportCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/v1/workspaces/commit': {
@@ -9786,7 +9848,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1AuthSudoRoute: ApiV1AuthSudoRoute,
   ApiV1KycStatusRoute: ApiV1KycStatusRoute,
   ApiV1LedgerEventsRoute: ApiV1LedgerEventsRoute,
+  ApiV1PaymentsBunqWebhookRoute: ApiV1PaymentsBunqWebhookRoute,
+  ApiV1PaymentsStripeWebhookRoute: ApiV1PaymentsStripeWebhookRoute,
   ApiV1PowChallengeRoute: ApiV1PowChallengeRoute,
+  ApiV1SupportCheckoutRoute: ApiV1SupportCheckoutRoute,
   ApiV1WorkspacesCommitRoute: ApiV1WorkspacesCommitRoute,
   ApiWalletKindIdRoute: ApiWalletKindIdRoute,
   ApiWalletRenderHeroDotpngRoute: ApiWalletRenderHeroDotpngRoute,

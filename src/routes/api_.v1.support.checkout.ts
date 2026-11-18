@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api_/v1/support/checkout")({
         const { startSupport } = await import("@/lib/support/support.server");
         const run = () => startSupport({ ...parsed.data, signedIn: Boolean(user), origin: origin ?? self });
         const { withDbContext } = await import("@/lib/neon");
-        const result = user ? await withDbContext({ userId: user.id }, run) : await run();
+        const result = user ? await withDbContext({ userId: user.id, workspaceId: null }, run) : await run();
         if (!result.ok) {
           const status = result.reason === "sign_in_required" ? 401 : result.reason === "invalid_amount" ? 400 : 503;
           return Response.json({ error: result.reason }, { status, headers: noStore });
