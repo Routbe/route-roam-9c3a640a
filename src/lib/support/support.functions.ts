@@ -23,13 +23,12 @@ export const startSupportDonation = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { assertHuman } = await import("@/lib/altcha.server");
     await assertHuman(data.altcha ?? null);
-    const { hitRateLimit } = await import("@/lib/rate-limit.server");
+    const { hitRateLimit, clientIp } = await import("@/lib/rate-limit-db.server");
     const { getRequest } = await import("@tanstack/react-start/server");
     const { trustedCheckoutOrigin } = await import("@/lib/verification.server");
     const request = getRequest();
-    const ip = request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-    const limit = await hitRateLimit(`support-start:${context.userId ?? ip}`, 10, 3600).catch(() => null);
-    if (limit && !limit.allowed) return { ok: false as const, reason: "rate_limited" as const };
+    const limit = await hitRateLimit("support-start", context.userId ?? clientIp(request), { limit: 10, windowSec: 3600 });
+    if (!limit.ok) return { ok: false as const, reason: "rate_limited" as const };
     const { startSupport } = await import("./support.server");
     return startSupport({ level: data.level, rail: data.rail, amountCents: data.amountCents, signedIn: Boolean(context.userId), origin: trustedCheckoutOrigin(request, data.origin) });
   });
