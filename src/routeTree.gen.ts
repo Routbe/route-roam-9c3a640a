@@ -80,8 +80,10 @@ import { Route as UsernameTipRouteImport } from './routes/$username_.tip'
 import { Route as UsernameZkpAnchorDotjsonRouteImport } from './routes/$username_.zkp-anchor[.]json'
 import { Route as DotwellKnownAtprotoDidRouteImport } from './routes/[.]well-known.atproto-did'
 import { Route as DotwellKnownJwksDotjsonRouteImport } from './routes/[.]well-known.jwks[.]json'
+import { Route as DotwellKnownJwtVcIssuerRouteImport } from './routes/[.]well-known.jwt-vc-issuer'
 import { Route as DotwellKnownOpenapiDotjsonRouteImport } from './routes/[.]well-known.openapi[.]json'
 import { Route as DotwellKnownOpenidConfigurationRouteImport } from './routes/[.]well-known.openid-configuration'
+import { Route as DotwellKnownOpenidCredentialIssuerRouteImport } from './routes/[.]well-known.openid-credential-issuer'
 import { Route as DotwellKnownRoutAgentDotjsonRouteImport } from './routes/[.]well-known.rout-agent[.]json'
 import { Route as DotwellKnownRoutPqKeysDotjsonRouteImport } from './routes/[.]well-known.rout-pq-keys[.]json'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -232,6 +234,7 @@ import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as VCardIdRouteImport } from './routes/v.$cardId'
 import { Route as WSlugRouteImport } from './routes/w.$slug'
 import { Route as WorkspaceTransferTokenRouteImport } from './routes/workspace-transfer.$token'
+import { Route as DotwellKnownOauthAuthorizationServerOid4vciRouteImport } from './routes/[.]well-known.oauth-authorization-server.oid4vci'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenticated/admin.brands'
 import { Route as AuthenticatedAdminCardsRouteImport } from './routes/_authenticated/admin.cards'
@@ -411,12 +414,16 @@ import { Route as ApiPublicOauthRevokeRouteImport } from './routes/api_.public.o
 import { Route as ApiPublicOauthTokenRouteImport } from './routes/api_.public.oauth.token'
 import { Route as ApiPublicOauthUserinfoRouteImport } from './routes/api_.public.oauth.userinfo'
 import { Route as ApiPublicOgHandleRouteImport } from './routes/api_.public.og.$handle'
+import { Route as ApiPublicOid4vciCredentialRouteImport } from './routes/api_.public.oid4vci.credential'
+import { Route as ApiPublicOid4vciNonceRouteImport } from './routes/api_.public.oid4vci.nonce'
+import { Route as ApiPublicOid4vciTokenRouteImport } from './routes/api_.public.oid4vci.token'
 import { Route as ApiPublicPresenceHandleRouteImport } from './routes/api_.public.presence.$handle'
 import { Route as ApiPublicQrUploadRouteImport } from './routes/api_.public.qr.upload'
 import { Route as ApiPublicSessionLogoutRouteImport } from './routes/api_.public.session.logout'
 import { Route as ApiPublicSmsInboundRouteImport } from './routes/api_.public.sms.inbound'
 import { Route as ApiPublicSnapchatCallbackRouteImport } from './routes/api_.public.snapchat.callback'
 import { Route as ApiPublicSpotifyCallbackRouteImport } from './routes/api_.public.spotify.callback'
+import { Route as ApiPublicStatusListIdRouteImport } from './routes/api_.public.status.$listId'
 import { Route as ApiPublicSteamHandleRouteImport } from './routes/api_.public.steam.$handle'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api_.public.telegram.webhook'
 import { Route as ApiPublicWeatherWebhookTokenRouteImport } from './routes/api_.public.weather-webhook.$token'
@@ -463,6 +470,7 @@ import { Route as ApiV1KycDiditSessionRouteImport } from './routes/api_.v1.kyc.d
 import { Route as ApiV1KycDiditWebhookRouteImport } from './routes/api_.v1.kyc.didit.webhook'
 import { Route as ApiV1LedgerStreamsStreamIdRouteImport } from './routes/api_.v1.ledger.streams.$streamId'
 import { Route as ApiWalletRenderCardIdHeroDotpngRouteImport } from './routes/api_.wallet.render.$cardId.hero[.]png'
+import { Route as ApiPublicOauthVpResponseIdRouteImport } from './routes/api_.public.oauth.vp.response.$id'
 import { Route as ApiWalletRenderCardIdVersionFileRouteImport } from './routes/api_.wallet.render.$cardId.$version.$file'
 import { Route as ApiWalletRenderLogoBgFileRouteImport } from './routes/api_.wallet.render.logo.$bg.$file'
 
@@ -822,6 +830,11 @@ const DotwellKnownJwksDotjsonRoute = DotwellKnownJwksDotjsonRouteImport.update({
   path: '/.well-known/jwks.json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownJwtVcIssuerRoute = DotwellKnownJwtVcIssuerRouteImport.update({
+  id: '/.well-known/jwt-vc-issuer',
+  path: '/.well-known/jwt-vc-issuer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DotwellKnownOpenapiDotjsonRoute =
   DotwellKnownOpenapiDotjsonRouteImport.update({
     id: '/.well-known/openapi.json',
@@ -832,6 +845,12 @@ const DotwellKnownOpenidConfigurationRoute =
   DotwellKnownOpenidConfigurationRouteImport.update({
     id: '/.well-known/openid-configuration',
     path: '/.well-known/openid-configuration',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotwellKnownOpenidCredentialIssuerRoute =
+  DotwellKnownOpenidCredentialIssuerRouteImport.update({
+    id: '/.well-known/openid-credential-issuer',
+    path: '/.well-known/openid-credential-issuer',
     getParentRoute: () => rootRouteImport,
   } as any)
 const DotwellKnownRoutAgentDotjsonRoute =
@@ -1590,6 +1609,12 @@ const WorkspaceTransferTokenRoute = WorkspaceTransferTokenRouteImport.update({
   path: '/workspace-transfer/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownOauthAuthorizationServerOid4vciRoute =
+  DotwellKnownOauthAuthorizationServerOid4vciRouteImport.update({
+    id: '/.well-known/oauth-authorization-server/oid4vci',
+    path: '/.well-known/oauth-authorization-server/oid4vci',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -2567,6 +2592,22 @@ const ApiPublicOgHandleRoute = ApiPublicOgHandleRouteImport.update({
   path: '/api/public/og/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOid4vciCredentialRoute =
+  ApiPublicOid4vciCredentialRouteImport.update({
+    id: '/api_/public/oid4vci/credential',
+    path: '/api/public/oid4vci/credential',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicOid4vciNonceRoute = ApiPublicOid4vciNonceRouteImport.update({
+  id: '/api_/public/oid4vci/nonce',
+  path: '/api/public/oid4vci/nonce',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicOid4vciTokenRoute = ApiPublicOid4vciTokenRouteImport.update({
+  id: '/api_/public/oid4vci/token',
+  path: '/api/public/oid4vci/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPresenceHandleRoute = ApiPublicPresenceHandleRouteImport.update({
   id: '/api_/public/presence/$handle',
   path: '/api/public/presence/$handle',
@@ -2599,6 +2640,11 @@ const ApiPublicSpotifyCallbackRoute =
     path: '/api/public/spotify/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicStatusListIdRoute = ApiPublicStatusListIdRouteImport.update({
+  id: '/api_/public/status/$listId',
+  path: '/api/public/status/$listId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSteamHandleRoute = ApiPublicSteamHandleRouteImport.update({
   id: '/api_/public/steam/$handle',
   path: '/api/public/steam/$handle',
@@ -2861,6 +2907,12 @@ const ApiWalletRenderCardIdHeroDotpngRoute =
     path: '/api/wallet/render/$cardId/hero.png',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOauthVpResponseIdRoute =
+  ApiPublicOauthVpResponseIdRouteImport.update({
+    id: '/api_/public/oauth/vp/response/$id',
+    path: '/api/public/oauth/vp/response/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiWalletRenderCardIdVersionFileRoute =
   ApiWalletRenderCardIdVersionFileRouteImport.update({
     id: '/api_/wallet/render/$cardId/$version/$file',
@@ -2945,8 +2997,10 @@ export interface FileRoutesByFullPath {
   '/$username/zkp-anchor.json': typeof UsernameZkpAnchorDotjsonRoute
   '/.well-known/atproto-did': typeof DotwellKnownAtprotoDidRoute
   '/.well-known/jwks.json': typeof DotwellKnownJwksDotjsonRoute
+  '/.well-known/jwt-vc-issuer': typeof DotwellKnownJwtVcIssuerRoute
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
+  '/.well-known/openid-credential-issuer': typeof DotwellKnownOpenidCredentialIssuerRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
   '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -3097,6 +3151,7 @@ export interface FileRoutesByFullPath {
   '/safety/': typeof SafetyIndexRoute
   '/solutions/': typeof SolutionsIndexRoute
   '/support/': typeof SupportIndexRoute
+  '/.well-known/oauth-authorization-server/oid4vci': typeof DotwellKnownOauthAuthorizationServerOid4vciRoute
   '/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/admin/cards': typeof AuthenticatedAdminCardsRoute
   '/admin/console': typeof AuthenticatedAdminConsoleRoute
@@ -3275,12 +3330,16 @@ export interface FileRoutesByFullPath {
   '/api/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api/public/oid4vci/credential': typeof ApiPublicOid4vciCredentialRoute
+  '/api/public/oid4vci/nonce': typeof ApiPublicOid4vciNonceRoute
+  '/api/public/oid4vci/token': typeof ApiPublicOid4vciTokenRoute
   '/api/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/sms/inbound': typeof ApiPublicSmsInboundRoute
   '/api/public/snapchat/callback': typeof ApiPublicSnapchatCallbackRoute
   '/api/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api/public/status/$listId': typeof ApiPublicStatusListIdRoute
   '/api/public/steam/$handle': typeof ApiPublicSteamHandleRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
@@ -3328,6 +3387,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/ledger/streams/$streamId': typeof ApiV1LedgerStreamsStreamIdRoute
   '/api/wallet/render/$cardId/hero.png': typeof ApiWalletRenderCardIdHeroDotpngRoute
   '/console/apps/$appId/': typeof AuthenticatedConsoleAppsAppIdIndexRoute
+  '/api/public/oauth/vp/response/$id': typeof ApiPublicOauthVpResponseIdRoute
   '/api/wallet/render/$cardId/$version/$file': typeof ApiWalletRenderCardIdVersionFileRoute
   '/api/wallet/render/logo/$bg/$file': typeof ApiWalletRenderLogoBgFileRoute
 }
@@ -3390,8 +3450,10 @@ export interface FileRoutesByTo {
   '/$username/zkp-anchor.json': typeof UsernameZkpAnchorDotjsonRoute
   '/.well-known/atproto-did': typeof DotwellKnownAtprotoDidRoute
   '/.well-known/jwks.json': typeof DotwellKnownJwksDotjsonRoute
+  '/.well-known/jwt-vc-issuer': typeof DotwellKnownJwtVcIssuerRoute
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
+  '/.well-known/openid-credential-issuer': typeof DotwellKnownOpenidCredentialIssuerRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
   '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/agenda': typeof AuthenticatedAgendaRoute
@@ -3539,6 +3601,7 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyIndexRoute
   '/solutions': typeof SolutionsIndexRoute
   '/support': typeof SupportIndexRoute
+  '/.well-known/oauth-authorization-server/oid4vci': typeof DotwellKnownOauthAuthorizationServerOid4vciRoute
   '/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/admin/cards': typeof AuthenticatedAdminCardsRoute
   '/admin/console': typeof AuthenticatedAdminConsoleRoute
@@ -3715,12 +3778,16 @@ export interface FileRoutesByTo {
   '/api/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api/public/oid4vci/credential': typeof ApiPublicOid4vciCredentialRoute
+  '/api/public/oid4vci/nonce': typeof ApiPublicOid4vciNonceRoute
+  '/api/public/oid4vci/token': typeof ApiPublicOid4vciTokenRoute
   '/api/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/sms/inbound': typeof ApiPublicSmsInboundRoute
   '/api/public/snapchat/callback': typeof ApiPublicSnapchatCallbackRoute
   '/api/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api/public/status/$listId': typeof ApiPublicStatusListIdRoute
   '/api/public/steam/$handle': typeof ApiPublicSteamHandleRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
@@ -3768,6 +3835,7 @@ export interface FileRoutesByTo {
   '/api/v1/ledger/streams/$streamId': typeof ApiV1LedgerStreamsStreamIdRoute
   '/api/wallet/render/$cardId/hero.png': typeof ApiWalletRenderCardIdHeroDotpngRoute
   '/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdIndexRoute
+  '/api/public/oauth/vp/response/$id': typeof ApiPublicOauthVpResponseIdRoute
   '/api/wallet/render/$cardId/$version/$file': typeof ApiWalletRenderCardIdVersionFileRoute
   '/api/wallet/render/logo/$bg/$file': typeof ApiWalletRenderLogoBgFileRoute
 }
@@ -3844,8 +3912,10 @@ export interface FileRoutesById {
   '/$username_/zkp-anchor.json': typeof UsernameZkpAnchorDotjsonRoute
   '/.well-known/atproto-did': typeof DotwellKnownAtprotoDidRoute
   '/.well-known/jwks.json': typeof DotwellKnownJwksDotjsonRoute
+  '/.well-known/jwt-vc-issuer': typeof DotwellKnownJwtVcIssuerRoute
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
+  '/.well-known/openid-credential-issuer': typeof DotwellKnownOpenidCredentialIssuerRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
   '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -3996,6 +4066,7 @@ export interface FileRoutesById {
   '/safety/': typeof SafetyIndexRoute
   '/solutions/': typeof SolutionsIndexRoute
   '/support/': typeof SupportIndexRoute
+  '/.well-known/oauth-authorization-server/oid4vci': typeof DotwellKnownOauthAuthorizationServerOid4vciRoute
   '/_authenticated/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/_authenticated/admin/cards': typeof AuthenticatedAdminCardsRoute
   '/_authenticated/admin/console': typeof AuthenticatedAdminConsoleRoute
@@ -4174,12 +4245,16 @@ export interface FileRoutesById {
   '/api_/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api_/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api_/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api_/public/oid4vci/credential': typeof ApiPublicOid4vciCredentialRoute
+  '/api_/public/oid4vci/nonce': typeof ApiPublicOid4vciNonceRoute
+  '/api_/public/oid4vci/token': typeof ApiPublicOid4vciTokenRoute
   '/api_/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api_/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api_/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api_/public/sms/inbound': typeof ApiPublicSmsInboundRoute
   '/api_/public/snapchat/callback': typeof ApiPublicSnapchatCallbackRoute
   '/api_/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api_/public/status/$listId': typeof ApiPublicStatusListIdRoute
   '/api_/public/steam/$handle': typeof ApiPublicSteamHandleRoute
   '/api_/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api_/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
@@ -4227,6 +4302,7 @@ export interface FileRoutesById {
   '/api_/v1/ledger/streams/$streamId': typeof ApiV1LedgerStreamsStreamIdRoute
   '/api_/wallet/render/$cardId/hero.png': typeof ApiWalletRenderCardIdHeroDotpngRoute
   '/_authenticated/console/apps/$appId/': typeof AuthenticatedConsoleAppsAppIdIndexRoute
+  '/api_/public/oauth/vp/response/$id': typeof ApiPublicOauthVpResponseIdRoute
   '/api_/wallet/render/$cardId/$version/$file': typeof ApiWalletRenderCardIdVersionFileRoute
   '/api_/wallet/render/logo/$bg/$file': typeof ApiWalletRenderLogoBgFileRoute
 }
@@ -4303,8 +4379,10 @@ export interface FileRouteTypes {
     | '/$username/zkp-anchor.json'
     | '/.well-known/atproto-did'
     | '/.well-known/jwks.json'
+    | '/.well-known/jwt-vc-issuer'
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
+    | '/.well-known/openid-credential-issuer'
     | '/.well-known/rout-agent.json'
     | '/.well-known/rout-pq-keys.json'
     | '/admin'
@@ -4455,6 +4533,7 @@ export interface FileRouteTypes {
     | '/safety/'
     | '/solutions/'
     | '/support/'
+    | '/.well-known/oauth-authorization-server/oid4vci'
     | '/admin/brands'
     | '/admin/cards'
     | '/admin/console'
@@ -4633,12 +4712,16 @@ export interface FileRouteTypes {
     | '/api/public/oauth/token'
     | '/api/public/oauth/userinfo'
     | '/api/public/og/$handle'
+    | '/api/public/oid4vci/credential'
+    | '/api/public/oid4vci/nonce'
+    | '/api/public/oid4vci/token'
     | '/api/public/presence/$handle'
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/sms/inbound'
     | '/api/public/snapchat/callback'
     | '/api/public/spotify/callback'
+    | '/api/public/status/$listId'
     | '/api/public/steam/$handle'
     | '/api/public/telegram/webhook'
     | '/api/public/weather-webhook/$token'
@@ -4686,6 +4769,7 @@ export interface FileRouteTypes {
     | '/api/v1/ledger/streams/$streamId'
     | '/api/wallet/render/$cardId/hero.png'
     | '/console/apps/$appId/'
+    | '/api/public/oauth/vp/response/$id'
     | '/api/wallet/render/$cardId/$version/$file'
     | '/api/wallet/render/logo/$bg/$file'
   fileRoutesByTo: FileRoutesByTo
@@ -4748,8 +4832,10 @@ export interface FileRouteTypes {
     | '/$username/zkp-anchor.json'
     | '/.well-known/atproto-did'
     | '/.well-known/jwks.json'
+    | '/.well-known/jwt-vc-issuer'
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
+    | '/.well-known/openid-credential-issuer'
     | '/.well-known/rout-agent.json'
     | '/.well-known/rout-pq-keys.json'
     | '/agenda'
@@ -4897,6 +4983,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/solutions'
     | '/support'
+    | '/.well-known/oauth-authorization-server/oid4vci'
     | '/admin/brands'
     | '/admin/cards'
     | '/admin/console'
@@ -5073,12 +5160,16 @@ export interface FileRouteTypes {
     | '/api/public/oauth/token'
     | '/api/public/oauth/userinfo'
     | '/api/public/og/$handle'
+    | '/api/public/oid4vci/credential'
+    | '/api/public/oid4vci/nonce'
+    | '/api/public/oid4vci/token'
     | '/api/public/presence/$handle'
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/sms/inbound'
     | '/api/public/snapchat/callback'
     | '/api/public/spotify/callback'
+    | '/api/public/status/$listId'
     | '/api/public/steam/$handle'
     | '/api/public/telegram/webhook'
     | '/api/public/weather-webhook/$token'
@@ -5126,6 +5217,7 @@ export interface FileRouteTypes {
     | '/api/v1/ledger/streams/$streamId'
     | '/api/wallet/render/$cardId/hero.png'
     | '/console/apps/$appId'
+    | '/api/public/oauth/vp/response/$id'
     | '/api/wallet/render/$cardId/$version/$file'
     | '/api/wallet/render/logo/$bg/$file'
   id:
@@ -5201,8 +5293,10 @@ export interface FileRouteTypes {
     | '/$username_/zkp-anchor.json'
     | '/.well-known/atproto-did'
     | '/.well-known/jwks.json'
+    | '/.well-known/jwt-vc-issuer'
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
+    | '/.well-known/openid-credential-issuer'
     | '/.well-known/rout-agent.json'
     | '/.well-known/rout-pq-keys.json'
     | '/_authenticated/admin'
@@ -5353,6 +5447,7 @@ export interface FileRouteTypes {
     | '/safety/'
     | '/solutions/'
     | '/support/'
+    | '/.well-known/oauth-authorization-server/oid4vci'
     | '/_authenticated/admin/brands'
     | '/_authenticated/admin/cards'
     | '/_authenticated/admin/console'
@@ -5531,12 +5626,16 @@ export interface FileRouteTypes {
     | '/api_/public/oauth/token'
     | '/api_/public/oauth/userinfo'
     | '/api_/public/og/$handle'
+    | '/api_/public/oid4vci/credential'
+    | '/api_/public/oid4vci/nonce'
+    | '/api_/public/oid4vci/token'
     | '/api_/public/presence/$handle'
     | '/api_/public/qr/upload'
     | '/api_/public/session/logout'
     | '/api_/public/sms/inbound'
     | '/api_/public/snapchat/callback'
     | '/api_/public/spotify/callback'
+    | '/api_/public/status/$listId'
     | '/api_/public/steam/$handle'
     | '/api_/public/telegram/webhook'
     | '/api_/public/weather-webhook/$token'
@@ -5584,6 +5683,7 @@ export interface FileRouteTypes {
     | '/api_/v1/ledger/streams/$streamId'
     | '/api_/wallet/render/$cardId/hero.png'
     | '/_authenticated/console/apps/$appId/'
+    | '/api_/public/oauth/vp/response/$id'
     | '/api_/wallet/render/$cardId/$version/$file'
     | '/api_/wallet/render/logo/$bg/$file'
   fileRoutesById: FileRoutesById
@@ -5660,8 +5760,10 @@ export interface RootRouteChildren {
   UsernameZkpAnchorDotjsonRoute: typeof UsernameZkpAnchorDotjsonRoute
   DotwellKnownAtprotoDidRoute: typeof DotwellKnownAtprotoDidRoute
   DotwellKnownJwksDotjsonRoute: typeof DotwellKnownJwksDotjsonRoute
+  DotwellKnownJwtVcIssuerRoute: typeof DotwellKnownJwtVcIssuerRoute
   DotwellKnownOpenapiDotjsonRoute: typeof DotwellKnownOpenapiDotjsonRoute
   DotwellKnownOpenidConfigurationRoute: typeof DotwellKnownOpenidConfigurationRoute
+  DotwellKnownOpenidCredentialIssuerRoute: typeof DotwellKnownOpenidCredentialIssuerRoute
   DotwellKnownRoutAgentDotjsonRoute: typeof DotwellKnownRoutAgentDotjsonRoute
   DotwellKnownRoutPqKeysDotjsonRoute: typeof DotwellKnownRoutPqKeysDotjsonRoute
   APublicIdRoute: typeof APublicIdRoute
@@ -5707,6 +5809,7 @@ export interface RootRouteChildren {
   WSlugRoute: typeof WSlugRoute
   WorkspaceTransferTokenRoute: typeof WorkspaceTransferTokenRoute
   DiscoverIndexRoute: typeof DiscoverIndexRoute
+  DotwellKnownOauthAuthorizationServerOid4vciRoute: typeof DotwellKnownOauthAuthorizationServerOid4vciRoute
   ApiAccessVerifyRoute: typeof ApiAccessVerifyRoute
   ApiAdminMailCheckRoute: typeof ApiAdminMailCheckRoute
   ApiAgentIdentityRoute: typeof ApiAgentIdentityRoute
@@ -5809,12 +5912,16 @@ export interface RootRouteChildren {
   ApiPublicOauthTokenRoute: typeof ApiPublicOauthTokenRoute
   ApiPublicOauthUserinfoRoute: typeof ApiPublicOauthUserinfoRoute
   ApiPublicOgHandleRoute: typeof ApiPublicOgHandleRoute
+  ApiPublicOid4vciCredentialRoute: typeof ApiPublicOid4vciCredentialRoute
+  ApiPublicOid4vciNonceRoute: typeof ApiPublicOid4vciNonceRoute
+  ApiPublicOid4vciTokenRoute: typeof ApiPublicOid4vciTokenRoute
   ApiPublicPresenceHandleRoute: typeof ApiPublicPresenceHandleRoute
   ApiPublicQrUploadRoute: typeof ApiPublicQrUploadRoute
   ApiPublicSessionLogoutRoute: typeof ApiPublicSessionLogoutRoute
   ApiPublicSmsInboundRoute: typeof ApiPublicSmsInboundRoute
   ApiPublicSnapchatCallbackRoute: typeof ApiPublicSnapchatCallbackRoute
   ApiPublicSpotifyCallbackRoute: typeof ApiPublicSpotifyCallbackRoute
+  ApiPublicStatusListIdRoute: typeof ApiPublicStatusListIdRoute
   ApiPublicSteamHandleRoute: typeof ApiPublicSteamHandleRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicWeatherWebhookTokenRoute: typeof ApiPublicWeatherWebhookTokenRoute
@@ -5840,6 +5947,7 @@ export interface RootRouteChildren {
   ApiV1KycDiditWebhookRoute: typeof ApiV1KycDiditWebhookRoute
   ApiV1LedgerStreamsStreamIdRoute: typeof ApiV1LedgerStreamsStreamIdRoute
   ApiWalletRenderCardIdHeroDotpngRoute: typeof ApiWalletRenderCardIdHeroDotpngRoute
+  ApiPublicOauthVpResponseIdRoute: typeof ApiPublicOauthVpResponseIdRoute
   ApiWalletRenderCardIdVersionFileRoute: typeof ApiWalletRenderCardIdVersionFileRoute
   ApiWalletRenderLogoBgFileRoute: typeof ApiWalletRenderLogoBgFileRoute
 }
@@ -6343,6 +6451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownJwksDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/jwt-vc-issuer': {
+      id: '/.well-known/jwt-vc-issuer'
+      path: '/.well-known/jwt-vc-issuer'
+      fullPath: '/.well-known/jwt-vc-issuer'
+      preLoaderRoute: typeof DotwellKnownJwtVcIssuerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/openapi.json': {
       id: '/.well-known/openapi.json'
       path: '/.well-known/openapi.json'
@@ -6355,6 +6470,13 @@ declare module '@tanstack/react-router' {
       path: '/.well-known/openid-configuration'
       fullPath: '/.well-known/openid-configuration'
       preLoaderRoute: typeof DotwellKnownOpenidConfigurationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/openid-credential-issuer': {
+      id: '/.well-known/openid-credential-issuer'
+      path: '/.well-known/openid-credential-issuer'
+      fullPath: '/.well-known/openid-credential-issuer'
+      preLoaderRoute: typeof DotwellKnownOpenidCredentialIssuerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/rout-agent.json': {
@@ -7405,6 +7527,13 @@ declare module '@tanstack/react-router' {
       path: '/workspace-transfer/$token'
       fullPath: '/workspace-transfer/$token'
       preLoaderRoute: typeof WorkspaceTransferTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-authorization-server/oid4vci': {
+      id: '/.well-known/oauth-authorization-server/oid4vci'
+      path: '/.well-known/oauth-authorization-server/oid4vci'
+      fullPath: '/.well-known/oauth-authorization-server/oid4vci'
+      preLoaderRoute: typeof DotwellKnownOauthAuthorizationServerOid4vciRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -8660,6 +8789,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOgHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/public/oid4vci/credential': {
+      id: '/api_/public/oid4vci/credential'
+      path: '/api/public/oid4vci/credential'
+      fullPath: '/api/public/oid4vci/credential'
+      preLoaderRoute: typeof ApiPublicOid4vciCredentialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/oid4vci/nonce': {
+      id: '/api_/public/oid4vci/nonce'
+      path: '/api/public/oid4vci/nonce'
+      fullPath: '/api/public/oid4vci/nonce'
+      preLoaderRoute: typeof ApiPublicOid4vciNonceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/oid4vci/token': {
+      id: '/api_/public/oid4vci/token'
+      path: '/api/public/oid4vci/token'
+      fullPath: '/api/public/oid4vci/token'
+      preLoaderRoute: typeof ApiPublicOid4vciTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/public/presence/$handle': {
       id: '/api_/public/presence/$handle'
       path: '/api/public/presence/$handle'
@@ -8700,6 +8850,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/spotify/callback'
       fullPath: '/api/public/spotify/callback'
       preLoaderRoute: typeof ApiPublicSpotifyCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/status/$listId': {
+      id: '/api_/public/status/$listId'
+      path: '/api/public/status/$listId'
+      fullPath: '/api/public/status/$listId'
+      preLoaderRoute: typeof ApiPublicStatusListIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/public/steam/$handle': {
@@ -9022,6 +9179,13 @@ declare module '@tanstack/react-router' {
       path: '/api/wallet/render/$cardId/hero.png'
       fullPath: '/api/wallet/render/$cardId/hero.png'
       preLoaderRoute: typeof ApiWalletRenderCardIdHeroDotpngRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/oauth/vp/response/$id': {
+      id: '/api_/public/oauth/vp/response/$id'
+      path: '/api/public/oauth/vp/response/$id'
+      fullPath: '/api/public/oauth/vp/response/$id'
+      preLoaderRoute: typeof ApiPublicOauthVpResponseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/wallet/render/$cardId/$version/$file': {
@@ -9743,8 +9907,11 @@ const rootRouteChildren: RootRouteChildren = {
   UsernameZkpAnchorDotjsonRoute: UsernameZkpAnchorDotjsonRoute,
   DotwellKnownAtprotoDidRoute: DotwellKnownAtprotoDidRoute,
   DotwellKnownJwksDotjsonRoute: DotwellKnownJwksDotjsonRoute,
+  DotwellKnownJwtVcIssuerRoute: DotwellKnownJwtVcIssuerRoute,
   DotwellKnownOpenapiDotjsonRoute: DotwellKnownOpenapiDotjsonRoute,
   DotwellKnownOpenidConfigurationRoute: DotwellKnownOpenidConfigurationRoute,
+  DotwellKnownOpenidCredentialIssuerRoute:
+    DotwellKnownOpenidCredentialIssuerRoute,
   DotwellKnownRoutAgentDotjsonRoute: DotwellKnownRoutAgentDotjsonRoute,
   DotwellKnownRoutPqKeysDotjsonRoute: DotwellKnownRoutPqKeysDotjsonRoute,
   APublicIdRoute: APublicIdRoute,
@@ -9790,6 +9957,8 @@ const rootRouteChildren: RootRouteChildren = {
   WSlugRoute: WSlugRoute,
   WorkspaceTransferTokenRoute: WorkspaceTransferTokenRoute,
   DiscoverIndexRoute: DiscoverIndexRoute,
+  DotwellKnownOauthAuthorizationServerOid4vciRoute:
+    DotwellKnownOauthAuthorizationServerOid4vciRoute,
   ApiAccessVerifyRoute: ApiAccessVerifyRoute,
   ApiAdminMailCheckRoute: ApiAdminMailCheckRoute,
   ApiAgentIdentityRoute: ApiAgentIdentityRoute,
@@ -9894,12 +10063,16 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicOauthTokenRoute: ApiPublicOauthTokenRoute,
   ApiPublicOauthUserinfoRoute: ApiPublicOauthUserinfoRoute,
   ApiPublicOgHandleRoute: ApiPublicOgHandleRoute,
+  ApiPublicOid4vciCredentialRoute: ApiPublicOid4vciCredentialRoute,
+  ApiPublicOid4vciNonceRoute: ApiPublicOid4vciNonceRoute,
+  ApiPublicOid4vciTokenRoute: ApiPublicOid4vciTokenRoute,
   ApiPublicPresenceHandleRoute: ApiPublicPresenceHandleRoute,
   ApiPublicQrUploadRoute: ApiPublicQrUploadRoute,
   ApiPublicSessionLogoutRoute: ApiPublicSessionLogoutRoute,
   ApiPublicSmsInboundRoute: ApiPublicSmsInboundRoute,
   ApiPublicSnapchatCallbackRoute: ApiPublicSnapchatCallbackRoute,
   ApiPublicSpotifyCallbackRoute: ApiPublicSpotifyCallbackRoute,
+  ApiPublicStatusListIdRoute: ApiPublicStatusListIdRoute,
   ApiPublicSteamHandleRoute: ApiPublicSteamHandleRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicWeatherWebhookTokenRoute: ApiPublicWeatherWebhookTokenRoute,
@@ -9925,6 +10098,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1KycDiditWebhookRoute: ApiV1KycDiditWebhookRoute,
   ApiV1LedgerStreamsStreamIdRoute: ApiV1LedgerStreamsStreamIdRoute,
   ApiWalletRenderCardIdHeroDotpngRoute: ApiWalletRenderCardIdHeroDotpngRoute,
+  ApiPublicOauthVpResponseIdRoute: ApiPublicOauthVpResponseIdRoute,
   ApiWalletRenderCardIdVersionFileRoute: ApiWalletRenderCardIdVersionFileRoute,
   ApiWalletRenderLogoBgFileRoute: ApiWalletRenderLogoBgFileRoute,
 }
