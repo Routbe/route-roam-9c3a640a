@@ -419,6 +419,23 @@ export const enclave = {
       return callEnclave("support.verify_inclusion", { proof, edPublicKey: ek, pqPublicKey: qk, kid: pk.kid }, moved(ek, qk ?? undefined));
     },
   },
+  pq: {
+    /** Hybrid attestation for one purpose; signature and key are decoded here and transferred. */
+    verify: async (
+      purpose: string,
+      lines: readonly string[],
+      sig: { ed25519: string; mldsa65: string | null },
+      pk: { ed25519: string; mldsa65: string | null },
+    ) => {
+      const { b64uDecode } = await import("@/lib/support/hybrid-signature");
+      if (!sig.mldsa65 || !pk.mldsa65) return { valid: false, pq: false };
+      const e = b64uDecode(sig.ed25519);
+      const q = b64uDecode(sig.mldsa65);
+      const ek = b64uDecode(pk.ed25519);
+      const qk = b64uDecode(pk.mldsa65);
+      return callEnclave("pq.verify", { purpose, lines: [...lines], ed25519: e, mldsa65: q, edPublicKey: ek, pqPublicKey: qk }, moved(e, q, ek, qk));
+    },
+  },
   bhm: {
     match: (clientId: string, hashes: string[], identities: { kind: string; value: string }[]) =>
       callEnclave("bhm.match", { clientId, hashes, identities }),

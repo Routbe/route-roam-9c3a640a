@@ -237,15 +237,17 @@ export function ProfileBadge({
               >
                 {sig === "checking" ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-                ) : sig === "valid" ? (
+                ) : sig === "valid" || sig === "valid_pq" ? (
                   <KeyRound className="h-3.5 w-3.5 text-identity-verified" aria-hidden />
                 ) : (
                   <ShieldAlert className={`h-3.5 w-3.5 ${sig === "invalid" ? "text-destructive" : ""}`} aria-hidden />
                 )}
-                <span style={sig === "valid" ? undefined : muted}>
+                <span style={sig === "valid" || sig === "valid_pq" ? undefined : muted}>
                   {sig === "checking"
                     ? t("badges.signatureChecking")
-                    : sig === "valid"
+                    : sig === "valid_pq"
+                      ? t("badges.signatureValidPq")
+                      : sig === "valid"
                       ? t("badges.signatureValid")
                       : sig === "invalid"
                         ? t("badges.signatureInvalid")

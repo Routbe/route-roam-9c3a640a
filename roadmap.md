@@ -470,3 +470,9 @@
 - [x] Monthly server costs: 15,090 cents (Infomaniak 4850, Scaleway 2840, Neon 2900, Didit 4500)
 - [ ] Owner: bunq callback on the treasury account (BUNQ_SERVER_PUBLIC_KEY) and Stripe webhook secret (STRIPE_SUPPORT_WEBHOOK_SECRET or the existing endpoint)
 - [ ] PQ hybrid signatures beyond treasury, OID4VCI/OID4VP, revocation: phased plan proposed, waits for owner approval
+
+## PQ + EUDI wallet (approved plan 2026-11-18)
+- [ ] A: shared hybrid signer, Sign/Didit/identity attestations, /.well-known/rout-pq-keys.json, worker op pq.verify
+- [ ] B: OID4VCI issuer (metadata, pre-authorized code, token/nonce/credential), console tab
+- [ ] C: OID4VP verifier (request object, direct_post, verification), console tools
+- [ ] D: Token Status List (JWT, compressed), migration replay-tested, waits for GO

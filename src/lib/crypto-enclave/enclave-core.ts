@@ -60,6 +60,7 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { b64uDecode, treasuryRootMessage, verifyHybridBytes } from "@/lib/support/hybrid-signature";
 import { verifySupporterVc } from "@/lib/support/supporter-vc";
+import { isPqPurpose, pqMessage } from "@/lib/crypto/pq-purposes";
 import { checkInclusionProof } from "@/lib/support/treasury-tree";
 import { CHALLENGE_RE, recoveryLoginMessage } from "@/lib/recovery/recovery-login";
 import { cardFactorKeys } from "./card-factor";
@@ -1877,6 +1878,23 @@ const coreHandlers: CoreHandlers = {
       { ed25519: bytes(edSig), mldsa65: mldsa65 === null ? null : bytes(mldsa65) },
       { ed25519: bytes(edPublicKey), mldsa65: pqPublicKey === null ? null : bytes(pqPublicKey) },
       { requirePq: requirePq === true },
+    );
+  },
+
+  async "pq.verify"({ purpose, lines, ed25519: edSig, mldsa65, edPublicKey, pqPublicKey }) {
+    if (!isPqPurpose(purpose) || !Array.isArray(lines) || lines.length === 0 || lines.length > 16) fail("invalid_input");
+    const clean = lines.map((l) => str(l, 16384));
+    let message: Uint8Array;
+    try {
+      message = pqMessage(purpose, clean);
+    } catch {
+      return { valid: false, pq: false };
+    }
+    return verifyHybridBytes(
+      message,
+      { ed25519: bytes(edSig), mldsa65: bytes(mldsa65) },
+      { ed25519: bytes(edPublicKey), mldsa65: bytes(pqPublicKey) },
+      { requirePq: true },
     );
   },
 

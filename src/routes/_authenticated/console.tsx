@@ -23,6 +23,7 @@ import {
   SlidersHorizontal,
   Webhook,
   BookOpen,
+  Wallet,
 } from "lucide-react";
 import { RoutLogo } from "@/components/RoutLogo";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -39,6 +40,7 @@ const GLOBAL_NAV = [
   { to: "/console/apps", label: "Auth & Identity", icon: Blocks, exact: false },
   { to: "/console/api", label: "API & Webhooks", icon: Webhook, exact: false },
   { to: "/console/connectors", label: "AI Connectors (MCP)", icon: Bot, exact: false },
+  { to: "/console/wallet", label: "EUDI Wallet", icon: Wallet, exact: false },
   { to: "/console/billing", label: "Billing", icon: ReceiptText, exact: false },
   { to: "/console/docs", label: "AI-prompts", icon: Sparkles, exact: false },
   { to: "/developers", label: "Documentatie", icon: BookOpen, exact: false },

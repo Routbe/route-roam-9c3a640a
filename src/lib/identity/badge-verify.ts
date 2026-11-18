@@ -6,7 +6,7 @@
 import { b64u } from "@/lib/e2ee/crypto";
 import { badgeMessage, claimsMatchShown, decodeSignature, parseBadgeClaims, type BadgeAttestation, type BadgeMethod } from "./badge-attestation";
 
-export type BadgeSignatureState = "checking" | "valid" | "invalid" | "unavailable";
+export type BadgeSignatureState = "checking" | "valid" | "valid_pq" | "invalid" | "unavailable";
 
 type BadgeKey = { kid: string; publicKey: Uint8Array };
 let keyPromise: Promise<BadgeKey | null> | null = null;
@@ -48,7 +48,14 @@ export async function verifyBadgeAttestation(
   try {
     const { enclave } = await import("@/lib/crypto-enclave/client");
     const { valid } = await enclave.badge.verify(badgeMessage(attestation.payload), signature, key.publicKey);
-    return valid ? "valid" : "invalid";
+    if (!valid) return "invalid";
+    if (!attestation.pq) return "valid";
+    const { isPqAttestation } = await import("@/lib/crypto/pq-purposes");
+    if (claims.method !== "didit" || !isPqAttestation(attestation.pq)) return "invalid";
+    const { verifyPqAttestation } = await import("@/lib/crypto/pq-verify");
+    const pq = await verifyPqAttestation("didit", [attestation.payload], attestation.pq);
+    // A PQ signature that is present but wrong voids the card; an unreachable key leaves Ed25519 standing.
+    return pq === "valid" ? "valid_pq" : pq === "invalid" ? "invalid" : "valid";
   } catch {
     return "unavailable";
   }

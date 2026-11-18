@@ -14300,6 +14300,317 @@
     },
     {
       "schema": "public",
+      "name": "oid4vci_offers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "notNull": true,
+          "default": "gen_random_uuid()",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "config",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "claims",
+          "type": "jsonb",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "code_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "tx_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "token_hash",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "attempts",
+          "type": "smallint",
+          "notNull": true,
+          "default": "0",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "redeemed_at",
+          "type": "timestamp with time zone",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "issued_at",
+          "type": "timestamp with time zone",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "oid4vci_offers_attempts_check",
+          "kind": "c",
+          "def": "CHECK (((attempts >= 0) AND (attempts <= 5)))"
+        },
+        {
+          "name": "oid4vci_offers_claims_check",
+          "kind": "c",
+          "def": "CHECK (((jsonb_typeof(claims) = 'object'::text) AND (octet_length((claims)::text) <= 2000)))"
+        },
+        {
+          "name": "oid4vci_offers_code_hash_check",
+          "kind": "c",
+          "def": "CHECK ((code_hash ~ '^[0-9a-f]{64}$'::text))"
+        },
+        {
+          "name": "oid4vci_offers_code_hash_key",
+          "kind": "u",
+          "def": "UNIQUE (code_hash)"
+        },
+        {
+          "name": "oid4vci_offers_config_check",
+          "kind": "c",
+          "def": "CHECK ((config = 'rout_verified_human'::text))"
+        },
+        {
+          "name": "oid4vci_offers_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (id)"
+        },
+        {
+          "name": "oid4vci_offers_token_hash_check",
+          "kind": "c",
+          "def": "CHECK (((token_hash IS NULL) OR (token_hash ~ '^[0-9a-f]{64}$'::text)))"
+        },
+        {
+          "name": "oid4vci_offers_token_hash_key",
+          "kind": "u",
+          "def": "UNIQUE (token_hash)"
+        },
+        {
+          "name": "oid4vci_offers_tx_hash_check",
+          "kind": "c",
+          "def": "CHECK ((tx_hash ~ '^[0-9a-f]{64}$'::text))"
+        },
+        {
+          "name": "oid4vci_offers_user_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX oid4vci_offers_user_id_idx ON public.oid4vci_offers USING btree (user_id, created_at)"
+      ],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
+      "name": "oid4vp_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "notNull": true,
+          "default": "gen_random_uuid()",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "label",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "nonce",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "dcql",
+          "type": "jsonb",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "notNull": true,
+          "default": "'pending'::text",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "result",
+          "type": "jsonb",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "oid4vp_requests_dcql_check",
+          "kind": "c",
+          "def": "CHECK (((jsonb_typeof(dcql) = 'object'::text) AND (octet_length((dcql)::text) <= 4000)))"
+        },
+        {
+          "name": "oid4vp_requests_label_check",
+          "kind": "c",
+          "def": "CHECK (((char_length(label) >= 1) AND (char_length(label) <= 80)))"
+        },
+        {
+          "name": "oid4vp_requests_nonce_check",
+          "kind": "c",
+          "def": "CHECK ((nonce ~ '^[A-Za-z0-9_-]{22,64}$'::text))"
+        },
+        {
+          "name": "oid4vp_requests_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (id)"
+        },
+        {
+          "name": "oid4vp_requests_result_check",
+          "kind": "c",
+          "def": "CHECK (((result IS NULL) OR (octet_length((result)::text) <= 8000)))"
+        },
+        {
+          "name": "oid4vp_requests_state_check",
+          "kind": "c",
+          "def": "CHECK ((state ~ '^[A-Za-z0-9_-]{22,64}$'::text))"
+        },
+        {
+          "name": "oid4vp_requests_state_key",
+          "kind": "u",
+          "def": "UNIQUE (state)"
+        },
+        {
+          "name": "oid4vp_requests_status_check",
+          "kind": "c",
+          "def": "CHECK ((status = ANY (ARRAY['pending'::text, 'verified'::text, 'rejected'::text])))"
+        },
+        {
+          "name": "oid4vp_requests_user_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX oid4vp_requests_user_id_idx ON public.oid4vp_requests USING btree (user_id, created_at)"
+      ],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
       "name": "oidc_subjects",
       "columns": [
         {
@@ -27326,6 +27637,108 @@
     },
     {
       "schema": "public",
+      "name": "wallet_credentials",
+      "columns": [
+        {
+          "name": "status_idx",
+          "type": "bigint",
+          "notNull": true,
+          "default": null,
+          "identity": "a",
+          "generated": null
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "config",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "jti_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "issued_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "wallet_credentials_config_check",
+          "kind": "c",
+          "def": "CHECK ((config = 'rout_verified_human'::text))"
+        },
+        {
+          "name": "wallet_credentials_jti_hash_check",
+          "kind": "c",
+          "def": "CHECK ((jti_hash ~ '^[0-9a-f]{64}$'::text))"
+        },
+        {
+          "name": "wallet_credentials_jti_hash_key",
+          "kind": "u",
+          "def": "UNIQUE (jti_hash)"
+        },
+        {
+          "name": "wallet_credentials_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (status_idx)"
+        },
+        {
+          "name": "wallet_credentials_status_idx_check",
+          "kind": "c",
+          "def": "CHECK (((status_idx >= 0) AND (status_idx <= 131071)))"
+        },
+        {
+          "name": "wallet_credentials_user_id_fkey",
+          "kind": "f",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX wallet_credentials_user_id_idx ON public.wallet_credentials USING btree (user_id)"
+      ],
+      "triggers": [],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
       "name": "wallet_passes",
       "columns": [
         {
@@ -35966,6 +36379,12 @@
     },
     {
       "schema": "public",
+      "name": "rout_public_status_active",
+      "args": "",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_public_status_active()\n RETURNS TABLE(status_idx bigint)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select w.status_idx from public.wallet_credentials w\n   where w.revoked_at is null and w.expires_at > now()\n   order by w.status_idx\n$function$"
+    },
+    {
+      "schema": "public",
       "name": "rout_public_supporter_presentation",
       "args": "p_handle text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_public_supporter_presentation(p_handle text)\n RETURNS text\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select c.presentation\n    from public.profiles p\n    join public.supporter_credentials c on c.user_id = p.id\n   where p.username = pg_catalog.lower(p_handle) and not coalesce(p.is_banned, false)\n     and c.presentation is not null and c.revoked_at is null and c.expires_at > now()\n   order by c.issued_at desc\n   limit 1\n$function$"
@@ -36512,6 +36931,36 @@
     },
     {
       "schema": "public",
+      "name": "rout_vci_issue",
+      "args": "p_token_hash text, p_jti_hash text, p_days integer",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vci_issue(p_token_hash text, p_jti_hash text, p_days integer)\n RETURNS TABLE(status_idx bigint, config text, claims jsonb, expires_at timestamp with time zone)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare\n  v public.oid4vci_offers%rowtype;\n  v_idx bigint;\n  v_exp timestamptz;\nbegin\n  if p_token_hash !~ '^[0-9a-f]{64}$' or p_jti_hash !~ '^[0-9a-f]{64}$' then return; end if;\n  select * into v from public.oid4vci_offers o where o.token_hash = p_token_hash for update;\n  if not found or v.issued_at is not null or v.redeemed_at is null or v.redeemed_at < now() - interval '5 minutes' then\n    return;\n  end if;\n  update public.oid4vci_offers o set issued_at = now() where o.id = v.id;\n  insert into public.wallet_credentials (user_id, config, jti_hash, expires_at)\n  values (v.user_id, v.config, p_jti_hash, now() + pg_catalog.make_interval(days => least(greatest(coalesce(p_days, 1), 1), 365)))\n  returning wallet_credentials.status_idx, wallet_credentials.expires_at into v_idx, v_exp;\n  return query select v_idx, v.config, v.claims, v_exp;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vci_mine",
+      "args": "",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vci_mine()\n RETURNS TABLE(status_idx bigint, config text, issued_at timestamp with time zone, expires_at timestamp with time zone, revoked_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select w.status_idx, w.config, w.issued_at, w.expires_at, w.revoked_at\n    from public.wallet_credentials w\n   where w.user_id = public.rout_current_user_id()\n   order by w.status_idx desc\n   limit 100\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vci_offer_create",
+      "args": "p_config text, p_code_hash text, p_tx_hash text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vci_offer_create(p_config text, p_code_hash text, p_tx_hash text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare\n  v_user uuid := public.rout_current_user_id();\n  v_human boolean;\n  v_age smallint;\n  v_id uuid;\nbegin\n  if v_user is null or p_config <> 'rout_verified_human' or p_code_hash !~ '^[0-9a-f]{64}$' or p_tx_hash !~ '^[0-9a-f]{64}$' then\n    return null;\n  end if;\n  select coalesce(c.has_legal_identity, false) or coalesce(c.is_real_human, false), c.age_floor\n    into v_human, v_age\n    from public.rout_my_identity_claims() c;\n  if not coalesce(v_human, false) then return null; end if;\n  delete from public.oid4vci_offers o where o.user_id = v_user and o.expires_at < now() - interval '1 day';\n  if (select pg_catalog.count(*) from public.oid4vci_offers o where o.user_id = v_user and o.created_at > now() - interval '10 minutes') >= 5 then\n    return null;\n  end if;\n  insert into public.oid4vci_offers (user_id, config, claims, code_hash, tx_hash, expires_at)\n  values (v_user, p_config, pg_catalog.jsonb_build_object('verified_human', true, 'age_floor', v_age), p_code_hash, p_tx_hash, now() + interval '10 minutes')\n  returning oid4vci_offers.id into v_id;\n  return v_id;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vci_redeem",
+      "args": "p_code_hash text, p_tx_hash text, p_token_hash text",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vci_redeem(p_code_hash text, p_tx_hash text, p_token_hash text)\n RETURNS text\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare\n  v public.oid4vci_offers%rowtype;\nbegin\n  if p_code_hash !~ '^[0-9a-f]{64}$' or p_tx_hash !~ '^[0-9a-f]{64}$' or p_token_hash !~ '^[0-9a-f]{64}$' then\n    return 'invalid';\n  end if;\n  select * into v from public.oid4vci_offers o where o.code_hash = p_code_hash for update;\n  if not found then return 'invalid'; end if;\n  if v.redeemed_at is not null then return 'used'; end if;\n  if v.expires_at <= now() then return 'expired'; end if;\n  if v.attempts >= 5 then return 'locked'; end if;\n  if v.tx_hash <> p_tx_hash then\n    update public.oid4vci_offers o set attempts = o.attempts + 1 where o.id = v.id;\n    return 'invalid_tx';\n  end if;\n  update public.oid4vci_offers o set redeemed_at = now(), token_hash = p_token_hash where o.id = v.id;\n  return 'ok';\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vci_revoke",
+      "args": "p_idx bigint",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vci_revoke(p_idx bigint)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\nbegin\n  update public.wallet_credentials w set revoked_at = now()\n   where w.status_idx = p_idx and w.user_id = public.rout_current_user_id() and w.revoked_at is null;\n  return found;\nend $function$"
+    },
+    {
+      "schema": "public",
       "name": "rout_visit_seen_recently",
       "args": "p_hash text, p_handle text, p_space text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_visit_seen_recently(p_hash text, p_handle text, p_space text)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select exists (\n    select 1 from public.profile_visits\n     where visitor_hash = p_hash and handle = p_handle and space = p_space\n       and created_at > now() - interval '30 minutes'\n  );\n$function$"
@@ -36587,6 +37036,30 @@
       "name": "rout_vp_reprice",
       "args": "p_id uuid, p_amount integer, p_donation integer, p_plan text",
       "def": "CREATE OR REPLACE FUNCTION public.rout_vp_reprice(p_id uuid, p_amount integer, p_donation integer, p_plan text)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare v uuid := public.rout_require_member();\nbegin\n  if p_amount not between 0 and 100000 or coalesce(p_donation, 0) not between 0 and 100000\n     or p_plan not in ('none', 'one_time', 'monthly', 'yearly') then\n    raise exception 'invalid payment' using errcode = '22023';\n  end if;\n  update public.verification_payments\n     set amount_cents = p_amount, donation_cents = coalesce(p_donation, 0), donation_plan = p_plan, updated_at = pg_catalog.now()\n   where id = p_id and user_id = v and provider = 'stripe' and status in ('pending', 'incomplete');\n  return found;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vp_request_complete",
+      "args": "p_id uuid, p_state text, p_status text, p_result jsonb",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vp_request_complete(p_id uuid, p_state text, p_status text, p_result jsonb)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\nbegin\n  if p_status not in ('verified', 'rejected') then return false; end if;\n  update public.oid4vp_requests r set status = p_status, result = p_result, completed_at = now()\n   where r.id = p_id and r.state = p_state and r.status = 'pending' and r.expires_at > now();\n  return found;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vp_request_create",
+      "args": "p_label text, p_nonce text, p_state text, p_dcql jsonb",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vp_request_create(p_label text, p_nonce text, p_state text, p_dcql jsonb)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare\n  v_user uuid := public.rout_current_user_id();\n  v_id uuid;\nbegin\n  if v_user is null then return null; end if;\n  delete from public.oid4vp_requests r where r.user_id = v_user and r.expires_at < now() - interval '1 day';\n  if (select pg_catalog.count(*) from public.oid4vp_requests r where r.user_id = v_user and r.created_at > now() - interval '10 minutes') >= 20 then\n    return null;\n  end if;\n  insert into public.oid4vp_requests (user_id, label, nonce, state, dcql, expires_at)\n  values (v_user, p_label, p_nonce, p_state, p_dcql, now() + interval '10 minutes')\n  returning oid4vp_requests.id into v_id;\n  return v_id;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vp_request_for_wallet",
+      "args": "p_id uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vp_request_for_wallet(p_id uuid)\n RETURNS TABLE(nonce text, state text, dcql jsonb, status text, expires_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select r.nonce, r.state, r.dcql, r.status, r.expires_at from public.oid4vp_requests r where r.id = p_id\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "rout_vp_request_mine",
+      "args": "p_id uuid",
+      "def": "CREATE OR REPLACE FUNCTION public.rout_vp_request_mine(p_id uuid)\n RETURNS TABLE(label text, status text, result jsonb, created_at timestamp with time zone, expires_at timestamp with time zone, completed_at timestamp with time zone)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\n  select r.label, r.status, r.result, r.created_at, r.expires_at, r.completed_at\n    from public.oid4vp_requests r\n   where r.id = p_id and r.user_id = public.rout_current_user_id()\n$function$"
     },
     {
       "schema": "public",

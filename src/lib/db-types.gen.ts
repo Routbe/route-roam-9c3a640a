@@ -1364,6 +1364,35 @@ export interface PublicOauthStepUpCodesRow {
   "method": string;
 }
 
+export interface PublicOid4vciOffersRow {
+  "id": string;
+  "user_id": string;
+  "config": string;
+  "claims": JsonValue;
+  "code_hash": string;
+  "tx_hash": string;
+  "token_hash": string | null;
+  "attempts": number;
+  "created_at": string | Date;
+  "expires_at": string | Date;
+  "redeemed_at": string | Date | null;
+  "issued_at": string | Date | null;
+}
+
+export interface PublicOid4vpRequestsRow {
+  "id": string;
+  "user_id": string;
+  "label": string;
+  "nonce": string;
+  "state": string;
+  "dcql": JsonValue;
+  "status": string;
+  "result": JsonValue | null;
+  "created_at": string | Date;
+  "expires_at": string | Date;
+  "completed_at": string | Date | null;
+}
+
 export interface PublicOidcSubjectsRow {
   "id": string;
   "user_id": string;
@@ -2541,6 +2570,16 @@ export interface PublicVerifiedIdentityNullifiersRow {
   "age_floor": number | null;
 }
 
+export interface PublicWalletCredentialsRow {
+  "status_idx": string;
+  "user_id": string;
+  "config": string;
+  "jti_hash": string;
+  "issued_at": string | Date;
+  "expires_at": string | Date;
+  "revoked_at": string | Date | null;
+}
+
 export interface PublicWalletPassesRow {
   "object_id": string;
   "user_id": string;
@@ -2920,6 +2959,8 @@ export interface DbTables {
   "public.oauth_signing_keys": PublicOauthSigningKeysRow;
   "public.oauth_step_up_challenges": PublicOauthStepUpChallengesRow;
   "public.oauth_step_up_codes": PublicOauthStepUpCodesRow;
+  "public.oid4vci_offers": PublicOid4vciOffersRow;
+  "public.oid4vp_requests": PublicOid4vpRequestsRow;
   "public.oidc_subjects": PublicOidcSubjectsRow;
   "public.omni_ingest_tokens": PublicOmniIngestTokensRow;
   "public.omni_jobs": PublicOmniJobsRow;
@@ -3014,6 +3055,7 @@ export interface DbTables {
   "public.verification_payments": PublicVerificationPaymentsRow;
   "public.verified_identities": PublicVerifiedIdentitiesRow;
   "public.verified_identity_nullifiers": PublicVerifiedIdentityNullifiersRow;
+  "public.wallet_credentials": PublicWalletCredentialsRow;
   "public.wallet_passes": PublicWalletPassesRow;
   "public.wallet_transactions": PublicWalletTransactionsRow;
   "public.wallets": PublicWalletsRow;

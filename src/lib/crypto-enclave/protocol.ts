@@ -183,6 +183,11 @@ export interface EnclaveOps {
     req: { compact: string; edPublicKey: Uint8Array; kid: string; now: number };
     res: { valid: boolean; reason: string | null; claims: Record<string, unknown> | null };
   };
+  /** Hybrid Ed25519 ‖ ML-DSA-65 attestation (src/lib/crypto/pq-purposes.ts): the worker builds the domain message itself. */
+  "pq.verify": {
+    req: { purpose: string; lines: string[]; ed25519: Uint8Array; mldsa65: Uint8Array; edPublicKey: Uint8Array; pqPublicKey: Uint8Array };
+    res: { valid: boolean; pq: boolean };
+  };
   /** Treasury inclusion proof: Merkle path (+ opening) and the hybrid signature of its root. */
   "support.verify_inclusion": {
     req: { proof: string; edPublicKey: Uint8Array; pqPublicKey: Uint8Array | null; kid: string };
