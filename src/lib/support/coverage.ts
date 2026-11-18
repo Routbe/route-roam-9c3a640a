@@ -1,12 +1,17 @@
 /**
  * Infrastructure health bar: how much of this month's server bill the treasury covers.
- * Costs are the owner's real monthly invoices; until they are filled in, the bar says so
- * instead of showing an invented number.
+ * Costs are the owner's real monthly invoices; with an empty list the bar says so instead of
+ * showing an invented number.
  */
 export type MonthlyCost = { provider: string; cents: number };
 
-/** Monthly infrastructure costs in euro cents. Left empty until the owner supplies the figures. */
-export const MONTHLY_COSTS: readonly MonthlyCost[] = [];
+/** Monthly infrastructure costs in whole euro cents, as supplied by the owner (2026-11-18). */
+export const MONTHLY_COSTS: readonly MonthlyCost[] = [
+  { provider: "Infomaniak Cloud & Mail", cents: 4850 },
+  { provider: "Scaleway S3 Multi-Region Vault", cents: 2840 },
+  { provider: "Neon Serverless Postgres", cents: 2900 },
+  { provider: "Didit NFC API & Liveness", cents: 4500 },
+];
 
 export type Coverage =
   | { state: "unknown"; collectedCents: number }

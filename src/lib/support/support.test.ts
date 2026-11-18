@@ -15,7 +15,7 @@ import { issueSupporterVc, presentSupporterVc, verifySupporterVc } from "./suppo
 import { receiptMessage, transactionHash, type SupportReceipt } from "./receipt";
 import { buildPdf, receiptLines } from "./receipt-pdf";
 import { parseBunqPayment, verifyBunqSignature } from "./bunq-notification";
-import { coverage } from "./coverage";
+import { coverage, MONTHLY_COSTS } from "./coverage";
 import { dnsQuery, dnssecFromWire } from "./dnssec.server";
 import { PARTNERS } from "./partners";
 import { resolveSupportAmount } from "./support.server";
@@ -219,8 +219,19 @@ describe("bunq callback", () => {
 
 describe("coverage, amounts, partners, DNSSEC", () => {
   it("shows no percentage without real costs, and floors it otherwise", () => {
-    expect(coverage(5000)).toEqual({ state: "unknown", collectedCents: 5000 });
+    expect(coverage(5000, [])).toEqual({ state: "unknown", collectedCents: 5000 });
     expect(coverage(3333, [{ provider: "x", cents: 10000 }])).toEqual({ state: "known", collectedCents: 3333, costCents: 10000, percent: 33, shortfallCents: 6667 });
+  });
+  it("uses the owner's baseline of €150.90 a month", () => {
+    expect(Object.fromEntries(MONTHLY_COSTS.map((c) => [c.provider, c.cents]))).toEqual({
+      "Infomaniak Cloud & Mail": 4850,
+      "Scaleway S3 Multi-Region Vault": 2840,
+      "Neon Serverless Postgres": 2900,
+      "Didit NFC API & Liveness": 4500,
+    });
+    expect(coverage(0)).toMatchObject({ state: "known", costCents: 15090, percent: 0, shortfallCents: 15090 });
+    expect(coverage(7545)).toMatchObject({ percent: 50, shortfallCents: 7545 });
+    expect(coverage(15090)).toMatchObject({ percent: 100, shortfallCents: 0 });
   });
   it("accepts whole cents between €1 and €5,000", () => {
     expect(resolveSupportAmount(100)).toBe(100);

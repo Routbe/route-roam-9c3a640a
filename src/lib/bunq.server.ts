@@ -460,7 +460,7 @@ function matchByCurrency(
 }
 
 /** De centrale EUR-hoofdrekening (BE/NL) — het SEPA-vangnet. */
-function mainEurAccount(accounts: BunqAccount[]): BunqAccount | null {
+export function mainEurAccount(accounts: BunqAccount[]): BunqAccount | null {
   const pool = activePool(accounts);
   const eur = pool.filter((a) => a.currency === "EUR" && a.iban);
   return (
