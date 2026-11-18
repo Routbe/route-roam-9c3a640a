@@ -116,8 +116,3 @@ use the editor.
 ## One-file migration rollout
 - A GO for a single migration is applied with scripts/migration-rollout.ts --apply: the exact db/ file text travels as one parameter, runs only if its SHA-256 equals the file checksum and its predecessor is recorded, and is recorded with the definer guard in the same transaction (dry run: src/test/migration-rollout.test.ts). Why: a retyped or hand-split file must never diverge from db/.
 <!-- AGENT-MEMORY:END -->
-
-## Support treasury
-- Platform donations (/support/donations) live only in db/0293 tables reached through rout_support_* / rout_public_treasury_* definers; levels 2/3 never store a member, provider references are cleared on payment, and every paid donation appends one Poseidon Merkle leaf whose root is hybrid-signed (Ed25519 + ML-DSA-65, keys HKDF'd from ROUT_SUBJECT_MASTER_KEY in src/lib/support/keys.server.ts). Why: anyone can check the ledger while the database holds no donor identity below level 1.
-- Supporter credentials, inclusion proofs and treasury signatures are checked in the browser only through the crypto worker ops support.*; the donor crown renders only after support.verify_vc succeeds. Why: a crown or proof pasted into the page must never be trusted unverified.
-- Donation receipts are signed JSON records drawn to PDF in the browser, never labelled RSG1 (RSG1 is the Sign envelope format). Why: two formats must not share a name.
