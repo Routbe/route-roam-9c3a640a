@@ -60,7 +60,7 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { b64uDecode, treasuryRootMessage, verifyHybridBytes } from "@/lib/support/hybrid-signature";
 import { verifySupporterVc } from "@/lib/support/supporter-vc";
-import { isPqPurpose, pqMessage } from "@/lib/crypto/pq-purposes";
+import { isPqPurpose, pqMessage, type PqPurpose } from "@/lib/crypto/pq-purposes";
 import { checkInclusionProof } from "@/lib/support/treasury-tree";
 import { CHALLENGE_RE, recoveryLoginMessage } from "@/lib/recovery/recovery-login";
 import { cardFactorKeys } from "./card-factor";
@@ -1886,7 +1886,7 @@ const coreHandlers: CoreHandlers = {
     const clean = lines.map((l) => str(l, 16384));
     let message: Uint8Array;
     try {
-      message = pqMessage(purpose, clean);
+      message = pqMessage(purpose as PqPurpose, clean);
     } catch {
       return { valid: false, pq: false };
     }

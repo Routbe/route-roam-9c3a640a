@@ -67,10 +67,11 @@ export async function createVpRequest(userId: string, iss: string, input: { labe
   return { ok: true, id, url: `openid4vp://?${params.toString()}`, expiresAt: new Date(Date.now() + 10 * 60_000).toISOString() };
 }
 
+export type ClaimValue = string | number | boolean | null;
 export type VpCheck = {
   valid: boolean;
   reason: string | null;
-  claims: Record<string, unknown>;
+  claims: Record<string, ClaimValue>;
   missing: string[];
   holderBinding: boolean;
   status: "valid" | "revoked" | "unknown";
@@ -112,7 +113,9 @@ export async function checkPresentation(
   return {
     valid,
     reason: valid ? null : missing.length ? "claims_missing" : status !== "valid" ? `status_${status}` : "pq_missing",
-    claims: r.claims,
+    claims: Object.fromEntries(
+      Object.entries(r.claims).map(([k, v]): [string, ClaimValue] => [k, v === null || ["string", "number", "boolean"].includes(typeof v) ? (v as ClaimValue) : JSON.stringify(v)]),
+    ),
     missing,
     holderBinding: r.kb,
     status,
