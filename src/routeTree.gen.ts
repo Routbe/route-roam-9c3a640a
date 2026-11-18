@@ -83,6 +83,7 @@ import { Route as DotwellKnownJwksDotjsonRouteImport } from './routes/[.]well-kn
 import { Route as DotwellKnownOpenapiDotjsonRouteImport } from './routes/[.]well-known.openapi[.]json'
 import { Route as DotwellKnownOpenidConfigurationRouteImport } from './routes/[.]well-known.openid-configuration'
 import { Route as DotwellKnownRoutAgentDotjsonRouteImport } from './routes/[.]well-known.rout-agent[.]json'
+import { Route as DotwellKnownRoutPqKeysDotjsonRouteImport } from './routes/[.]well-known.rout-pq-keys[.]json'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedConsoleRouteImport } from './routes/_authenticated/console'
@@ -837,6 +838,12 @@ const DotwellKnownRoutAgentDotjsonRoute =
   DotwellKnownRoutAgentDotjsonRouteImport.update({
     id: '/.well-known/rout-agent.json',
     path: '/.well-known/rout-agent.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotwellKnownRoutPqKeysDotjsonRoute =
+  DotwellKnownRoutPqKeysDotjsonRouteImport.update({
+    id: '/.well-known/rout-pq-keys.json',
+    path: '/.well-known/rout-pq-keys.json',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -2941,6 +2948,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
+  '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/agenda': typeof AuthenticatedAgendaRoute
   '/console': typeof AuthenticatedConsoleRouteWithChildren
@@ -3385,6 +3393,7 @@ export interface FileRoutesByTo {
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
+  '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/domains': typeof AuthenticatedDomainsRoute
   '/my-data': typeof AuthenticatedMyDataRoute
@@ -3838,6 +3847,7 @@ export interface FileRoutesById {
   '/.well-known/openapi.json': typeof DotwellKnownOpenapiDotjsonRoute
   '/.well-known/openid-configuration': typeof DotwellKnownOpenidConfigurationRoute
   '/.well-known/rout-agent.json': typeof DotwellKnownRoutAgentDotjsonRoute
+  '/.well-known/rout-pq-keys.json': typeof DotwellKnownRoutPqKeysDotjsonRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/console': typeof AuthenticatedConsoleRouteWithChildren
@@ -4296,6 +4306,7 @@ export interface FileRouteTypes {
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
     | '/.well-known/rout-agent.json'
+    | '/.well-known/rout-pq-keys.json'
     | '/admin'
     | '/agenda'
     | '/console'
@@ -4740,6 +4751,7 @@ export interface FileRouteTypes {
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
     | '/.well-known/rout-agent.json'
+    | '/.well-known/rout-pq-keys.json'
     | '/agenda'
     | '/domains'
     | '/my-data'
@@ -5192,6 +5204,7 @@ export interface FileRouteTypes {
     | '/.well-known/openapi.json'
     | '/.well-known/openid-configuration'
     | '/.well-known/rout-agent.json'
+    | '/.well-known/rout-pq-keys.json'
     | '/_authenticated/admin'
     | '/_authenticated/agenda'
     | '/_authenticated/console'
@@ -5650,6 +5663,7 @@ export interface RootRouteChildren {
   DotwellKnownOpenapiDotjsonRoute: typeof DotwellKnownOpenapiDotjsonRoute
   DotwellKnownOpenidConfigurationRoute: typeof DotwellKnownOpenidConfigurationRoute
   DotwellKnownRoutAgentDotjsonRoute: typeof DotwellKnownRoutAgentDotjsonRoute
+  DotwellKnownRoutPqKeysDotjsonRoute: typeof DotwellKnownRoutPqKeysDotjsonRoute
   APublicIdRoute: typeof APublicIdRoute
   AccountAccountViewRoute: typeof AccountAccountViewRoute
   ApiHealthRoute: typeof ApiHealthRoute
@@ -6348,6 +6362,13 @@ declare module '@tanstack/react-router' {
       path: '/.well-known/rout-agent.json'
       fullPath: '/.well-known/rout-agent.json'
       preLoaderRoute: typeof DotwellKnownRoutAgentDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/rout-pq-keys.json': {
+      id: '/.well-known/rout-pq-keys.json'
+      path: '/.well-known/rout-pq-keys.json'
+      fullPath: '/.well-known/rout-pq-keys.json'
+      preLoaderRoute: typeof DotwellKnownRoutPqKeysDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -9725,6 +9746,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownOpenapiDotjsonRoute: DotwellKnownOpenapiDotjsonRoute,
   DotwellKnownOpenidConfigurationRoute: DotwellKnownOpenidConfigurationRoute,
   DotwellKnownRoutAgentDotjsonRoute: DotwellKnownRoutAgentDotjsonRoute,
+  DotwellKnownRoutPqKeysDotjsonRoute: DotwellKnownRoutPqKeysDotjsonRoute,
   APublicIdRoute: APublicIdRoute,
   AccountAccountViewRoute: AccountAccountViewRoute,
   ApiHealthRoute: ApiHealthRoute,
