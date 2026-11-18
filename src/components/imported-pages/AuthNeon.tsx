@@ -16,7 +16,9 @@ import { beginAuthIntent } from "@/lib/tour-draft.functions";
 import { Altcha } from "@/components/Altcha";
 import { isAdminMode } from "@/lib/app-mode";
 import { usePortalFrame } from "@/components/layout/PortalContext";
-import { withAltcha } from "@/lib/altcha-client";
+import { prefetchProof, withAltcha } from "@/lib/altcha-client";
+import { runConditionalPasskey } from "@/lib/auth/conditional-passkey";
+import { authTabFromKey, syncAuthTabUrl, type AuthTab } from "@/lib/auth/auth-tab-url";
 import { AUTH_UNAVAILABLE_TEXT, type AuthReadiness } from "@/lib/auth-readiness";
 import type { AuthProvidersInfo } from "@/lib/auth-providers.functions";
 import { useI18n } from "@/lib/i18n";
@@ -167,6 +169,22 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
     toast.error(message);
     return false;
   };
+  /** Moves focus (and the view) to the first sign-up field that still needs input. */
+  const focusField = (id: string) => {
+    const el = typeof document === "undefined" ? null : document.getElementById(id);
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
+
+  // Silent ALTCHA pre-fetch: the proof-of-work starts on the e-mail field's first focus,
+  // so the token is ready before "Verder met e-mail" / the passkey button is pressed.
+  const [altchaArmed, setAltchaArmed] = useState(false);
+  const armAltcha = () => {
+    if (unavailable) return;
+    void prefetchProof().catch(() => null);
+    if (!altchaArmed) setAltchaArmed(true);
+  };
 
   /** Session cookie is set server-side: one full load to /auth/continue, which re-checks it and 303s. */
   // `/auth/sign-up?onboard=social`: a new Google/GitHub/GitLab member waits in
@@ -179,6 +197,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
 
   const passkeyLogin = async () => {
     if (unavailable) { toast.error(AUTH_UNAVAILABLE_TEXT[locale]); return; }
+    stopConditional();
     setLoading(true);
     try {
       const res = await authClient.signIn.passkey();
@@ -194,34 +213,37 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
       toast.error(errorMessage(err, t("auth.passkey.failed")));
     } finally {
       setLoading(false);
+      if (!redirected.current) restartConditional();
     }
   };
 
-  // WebAuthn Conditional UI: saved passkeys appear in the browser's autofill.
-  // Runs on both tabs: tapping the e-mail field (autocomplete="username webauthn") offers saved
-  // passkeys from the OS sheet (Face ID / Touch ID / Android), also on "Account aanmaken".
+  // WebAuthn Conditional UI: on mount one navigator.credentials.get({ mediation: "conditional" }) runs
+  // under an AbortController, so focusing the e-mail field (autocomplete="username webauthn") offers
+  // saved passkeys in the OS sheet (Face ID / Touch ID / Android / Safari desktop), on both tabs.
+  // It is aborted on unmount and before every explicit passkey ceremony (one WebAuthn request at a time).
   const entryTab = mode === "signin" || mode === "signup";
+  const conditionalRef = useRef<AbortController | null>(null);
+  const [conditionalRun, setConditionalRun] = useState(0);
+  const stopConditional = () => {
+    conditionalRef.current?.abort();
+    conditionalRef.current = null;
+  };
+  const restartConditional = () => setConditionalRun((n) => n + 1);
   useEffect(() => {
     if (!readiness?.ready || !entryTab || step === "second") return;
-    let cancelled = false;
-    const pkc = typeof window !== "undefined" ? window.PublicKeyCredential : undefined;
-    if (!pkc?.isConditionalMediationAvailable) return;
-    void pkc.isConditionalMediationAvailable().then(async (ok) => {
-      if (!ok || cancelled) return;
-      try {
-        const res = await authClient.signIn.passkey({ autoFill: true });
-        if (cancelled || !res || res.error) return;
-        redirected.current = true;
-        window.location.replace(POST_AUTH_PATH);
-      } catch {
-        // Aborted or dismissed autofill: the explicit passkey button still works.
-      }
+    const controller = new AbortController();
+    conditionalRef.current = controller;
+    void runConditionalPasskey(controller.signal).then((outcome) => {
+      if (outcome !== "signed-in" || controller.signal.aborted) return;
+      redirected.current = true;
+      window.location.replace(POST_AUTH_PATH);
     });
     return () => {
-      cancelled = true;
+      controller.abort();
+      if (conditionalRef.current === controller) conditionalRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readiness?.ready, entryTab, step === "second"]);
+  }, [readiness?.ready, entryTab, step === "second", conditionalRun]);
 
   const failMessage = (error: { code?: string; message?: string; status?: number } | undefined, fallback: string) => {
     if (!error) return fallback;
@@ -275,14 +297,18 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
    */
   const signUp = async (e: React.FormEvent | null, withPassword = false) => {
     e?.preventDefault();
-    if (!consented) { toast.error(t("auth.signupConsent.required")); return; }
+    if (unavailable) { toast.error(AUTH_UNAVAILABLE_TEXT[locale]); return; }
+    if (adminPortal) return;
+    // Checked in the order the fields appear, so the first gap gets focus.
+    if (!emailAccepted()) { focusField("auth-email"); return; }
     const ageProblem = signupAgeProblem({ dob, parentEmail, email });
     if (ageProblem) {
+      focusField(ageProblem === "dob_invalid" ? "auth-signup-dob" : "auth-signup-parent");
       toast.error(ageProblem === "dob_invalid" ? t("auth.pk.dobInvalid") : t("auth.pk.parentInvalid"));
       return;
     }
-    if (unavailable) { toast.error(AUTH_UNAVAILABLE_TEXT[locale]); return; }
-    if (adminPortal || !emailAccepted()) return;
+    if (!consented) { focusField("auth-signup-consent"); toast.error(t("auth.signupConsent.required")); return; }
+    stopConditional();
     setLoading(true);
     const address = email.trim().toLowerCase();
     try {
@@ -305,6 +331,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
       toast.error(code === "account_exists" || /account_exists/.test(String((err as Error).message)) ? t("auth.pk.accountExists") : errorMessage(err, t("auth.pk.failed")));
     } finally {
       setLoading(false);
+      if (!redirected.current) restartConditional();
     }
   };
 
@@ -352,13 +379,14 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
         onChange={(e) => onEmailChange(e.target.value)}
         placeholder={t("auth.email.placeholder")}
         autoComplete="username webauthn"
+        onFocus={armAltcha}
         aria-invalid={emailError ? true : undefined}
         aria-describedby={emailError ? "auth-email-error" : undefined}
         className={`h-10 rounded-lg ${emailError ? "border-destructive focus-visible:ring-destructive/30" : ""}`}
         required
       />
       {emailError && <p id="auth-email-error" className="text-[11px] text-destructive">{emailError}</p>}
-      {!unavailable && <Altcha className="mt-1" />}
+      {!unavailable && <Altcha className="mt-1" active={altchaArmed} />}
     </div>
   );
 
@@ -430,9 +458,16 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
       </label>
     </div>
     <p className="text-[11px] leading-relaxed text-muted-foreground">{t("auth.pk.signupNote")}</p>
+    </>
+  );
+  /** Passkey submit of the /login fold-out; the sign-up tab uses its hero button instead. */
+  const signupSubmit = (
     <Button type="submit" className="h-11 w-full gap-2 rounded-lg font-medium" disabled={!canSubmitSignUp({ consented, busy: loading, unavailable, emailError: !!emailError })}>
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />} {t("auth.pk.signupCta")}
     </Button>
+  );
+  const signupPasswordOption = (
+    <>
     {passwordAvailable && (
       <Button type="button" variant="ghost" className="h-auto min-h-11 w-full gap-2 whitespace-normal text-sm" disabled={!canSubmitSignUp({ consented, busy: loading, unavailable, emailError: !!emailError })} onClick={() => void signUp(null, true)}>
         <Lock className="h-4 w-4 shrink-0" aria-hidden /> {t("auth.pw.signupWithPassword")}
@@ -440,6 +475,23 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
     )}
     </>
   );
+
+  /** Tab switch: state only (the card never remounts) plus /login <-> /register via history.replaceState. */
+  const switchTab = (tab: AuthTab) => {
+    if (tab !== mode) {
+      setMode(tab);
+      if (syncAuthTabUrl(tab)) document.title = t(tab === "signup" ? "auth.card.registerTitle" : "auth.meta.signin");
+    }
+    setStep("choose");
+  };
+  const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (mode !== "signin" && mode !== "signup") return;
+    const next = authTabFromKey(e.key, mode);
+    if (!next) return;
+    e.preventDefault();
+    switchTab(next);
+    document.getElementById(`auth-tab-${next}`)?.focus();
+  };
 
   const linkButton = (target: Mode, label: string, Icon: typeof KeyRound) => (
     <button
@@ -483,9 +535,26 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 sm:p-7" data-testid="auth-card">
           {!adminPortal && !smart && (mode === "signin" || mode === "signup") && step !== "second" && (
-            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist">
-              <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => { setMode("signin"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signin" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.card.tabSignin")}</button>
-              <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => { setMode("signup"); setStep("choose"); }} className={`h-11 rounded-lg text-sm font-medium transition ${mode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{t("auth.ui.signup.cta")}</button>
+            <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1" role="tablist" aria-label={t("auth.card.modeLabel")} data-testid="auth-mode-tabs">
+              {(["signin", "signup"] as const).map((tab) => {
+                const selected = mode === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    role="tab"
+                    id={`auth-tab-${tab}`}
+                    aria-selected={selected}
+                    aria-controls={selected ? `auth-panel-${tab}` : undefined}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => switchTab(tab)}
+                    onKeyDown={onTabKeyDown}
+                    className={`h-11 rounded-lg text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selected ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {tab === "signin" ? t("auth.card.tabSignin") : t("auth.ui.signup.cta")}
+                  </button>
+                );
+              })}
             </div>
           )}
           <div className="mb-4">
@@ -559,13 +628,15 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
                     <form onSubmit={signUp} className="space-y-3.5 px-3 pb-3">
                       <p className="text-[11px] leading-relaxed text-muted-foreground">{t("auth.smart.newBody")}</p>
                       {signupFields}
+                      {signupSubmit}
+                      {signupPasswordOption}
                     </form>
                   </details>
                 </div>
               )}
 
               {!smart && step === "choose" && (
-                <div className="space-y-4" data-testid="auth-signin-choose">
+                <div className="space-y-4" data-testid="auth-signin-choose" {...(!adminPortal ? { id: "auth-panel-signin", role: "tabpanel", "aria-labelledby": "auth-tab-signin" } : {})}>
                   <Button type="button" onClick={() => void passkeyLogin()} disabled={loading || unavailable} data-testid="auth-passkey-hero" className="cta-glow h-auto min-h-12 w-full gap-2 whitespace-normal px-4 py-3 text-center text-sm leading-tight sm:text-base">
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-5 w-5 shrink-0" />} <span className="min-w-0">{adminPortal ? t("auth.passkey") : t("auth.card.passkeyHero")}</span>
                   </Button>
@@ -626,7 +697,15 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
           )}
 
           {mode === "signup" && !adminPortal && (
-            <form onSubmit={signUp} className="mx-auto max-w-md space-y-3.5">
+            <form onSubmit={signUp} noValidate className="mx-auto max-w-md space-y-3.5" id="auth-panel-signup" role="tabpanel" aria-labelledby="auth-tab-signup" data-testid="auth-signup-panel">
+              {/* Hero: the form's only passkey submit. Missing fields get focus first; then the ticket and navigator.credentials.create run. */}
+              <Button type="submit" disabled={loading || unavailable} data-testid="auth-passkey-hero" className="cta-glow h-auto min-h-12 w-full gap-2 whitespace-normal px-4 py-3 text-center text-sm leading-tight sm:text-base">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-5 w-5 shrink-0" />} <span className="min-w-0">{t("auth.card.passkeyHeroSignup")}</span>
+              </Button>
+              <p className="text-center text-[11px] leading-relaxed text-muted-foreground">{t("auth.card.signupHeroHint")}</p>
+              <div className="flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted-foreground" aria-hidden>
+                <span className="h-px flex-1 bg-border" /> {t("auth.card.orAccount")} <span className="h-px flex-1 bg-border" />
+              </div>
               <div className="space-y-2" data-testid="auth-signup-providers">
                 <PublicProviderSignIn
                   configured={configuredProviders}
@@ -642,6 +721,7 @@ export default function AuthNeon({ initialMode = "signin", initialProviders = nu
               </div>
               {emailField}
               {signupFields}
+              {signupPasswordOption}
               <div className="flex justify-center border-t border-border pt-3" data-testid="auth-card-footer">
                 {linkButton("recovery", t("auth.card.lostEmail"), LifeBuoy)}
               </div>
