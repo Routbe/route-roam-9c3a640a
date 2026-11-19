@@ -89,22 +89,22 @@ describe("db/0294 EUDI wallet", () => {
   });
 
   it("an access token yields exactly one credential, starting at status index 0, at most 365 days", async () => {
-    expect(await issue(H("e"), H("j"))).toEqual([]);
-    const [row] = await issue(H("b"), H("j"), 9999);
+    expect(await issue(H("e"), H("7"))).toEqual([]);
+    const [row] = await issue(H("b"), H("7"), 9999);
     expect(Number(row!.status_idx)).toBe(0);
     expect(row!.config).toBe("rout_verified_human");
     expect(row!.claims).toEqual({ verified_human: true, age_floor: 18 });
     const days = (new Date(row!.expires_at).getTime() - Date.now()) / 86_400_000;
     expect(days).toBeGreaterThan(364.9);
     expect(days).toBeLessThan(365.1);
-    expect(await issue(H("b"), H("k"))).toEqual([]);
+    expect(await issue(H("b"), H("8"))).toEqual([]);
     expect(await active()).toEqual([0]);
   });
 
   it("refuses a token redeemed more than five minutes ago", async () => {
     expect(await redeem(H("5"), H("2"), H("d"))).toBe("ok");
     await db.query("update public.oid4vci_offers set redeemed_at = now() - interval '6 minutes' where token_hash = $1", [H("d")]);
-    expect(await issue(H("d"), H("l"))).toEqual([]);
+    expect(await issue(H("d"), H("9"))).toEqual([]);
   });
 
   it("only the owner lists and revokes a credential, and revocation removes it from the status input", async () => {
@@ -120,7 +120,7 @@ describe("db/0294 EUDI wallet", () => {
 
   it("an expired credential is no longer in the status input", async () => {
     expect(await redeem(H("6"), H("2"), H("6"))).toBe("ok");
-    const [row] = await issue(H("6"), H("m"));
+    const [row] = await issue(H("6"), H("a"));
     expect(await active()).toEqual([Number(row!.status_idx)]);
     await db.query("update public.wallet_credentials set expires_at = now() - interval '1 second' where status_idx = $1", [row!.status_idx]);
     expect(await active()).toEqual([]);
